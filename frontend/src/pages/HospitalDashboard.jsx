@@ -1,115 +1,202 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import AuthLoader from "../components/AuthLoader";
 
 const HospitalDashboard = () => {
-  const navigate = useNavigate()
-  const [profile, setProfile] = useState(null)
-  const [requests, setRequests] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState('requests')
-  const [showForm, setShowForm] = useState(false)
-  const [posting, setPosting] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [toast, setToast] = useState(null)
-  const [formData, setFormData] = useState({ blood_type: 'A+', urgency_level: 'critical', message: '', latitude: '', longitude: '' })
+  const navigate = useNavigate();
+  const [profile, setProfile] = useState(null);
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("requests");
+  const [showForm, setShowForm] = useState(false);
+  const [posting, setPosting] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [formData, setFormData] = useState({
+    blood_type: "A+",
+    urgency_level: "critical",
+    message: "",
+    latitude: "",
+    longitude: "",
+  });
 
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem("token");
 
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type })
-    setTimeout(() => setToast(null), 3500)
-  }
-
-  useEffect(() => {
-    fetchProfile()
-    fetchRequests()
-    const interval = setInterval(fetchRequests, 10000)
-    return () => clearInterval(interval)
-  }, [])
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3500);
+  };
 
   const fetchProfile = async () => {
     try {
-      const res = await fetch('http://localhost:3000/auth/profile', { headers: { Authorization: `Bearer ${token}` } })
-      const data = await res.json()
-      setProfile(data.user)
+      const res = await fetch("http://localhost:3000/auth/profile", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setProfile(data.user);
     } catch (e) {}
-  }
+  };
 
   const fetchRequests = async () => {
     try {
-      const res = await fetch('http://localhost:3000/hospital/history', { headers: { Authorization: `Bearer ${token}` } })
-      const data = await res.json()
-      setRequests(data.history)
-    } catch (e) {} finally { setLoading(false) }
-  }
+      const res = await fetch("http://localhost:3000/hospital/history", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setRequests(data.history);
+    } catch (e) {}
+  };
 
   const handleGetLocation = () => {
     navigator.geolocation.getCurrentPosition(
-      (pos) => { setFormData({ ...formData, latitude: pos.coords.latitude, longitude: pos.coords.longitude }); showToast('Location captured!') },
-      () => showToast('Could not get location.', 'error')
-    )
-  }
+      (pos) => {
+        setFormData({
+          ...formData,
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+        });
+        showToast("Location captured!");
+      },
+      () => showToast("Could not get location.", "error"),
+    );
+  };
 
   const handlePostRequest = async (e) => {
-    e.preventDefault()
-    setPosting(true)
+    e.preventDefault();
+    setPosting(true);
     try {
-      const res = await fetch('http://localhost:3000/hospital/request', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(formData)
-      })
-      const data = await res.json()
-      if (!res.ok) { showToast(data.error, 'error'); return }
-      showToast(`🎉 Request posted! ${data.notified_donors} donor${data.notified_donors !== 1 ? 's' : ''} notified.`)
-      setShowForm(false)
-      setFormData({ blood_type: 'A+', urgency_level: 'critical', message: '', latitude: '', longitude: '' })
-      fetchRequests()
-    } catch (e) { showToast('Something went wrong.', 'error') }
-    finally { setPosting(false) }
-  }
+      const res = await fetch("http://localhost:3000/hospital/request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error, "error");
+        return;
+      }
+      showToast(
+        `🎉 Request posted! ${data.notified_donors} donor${data.notified_donors !== 1 ? "s" : ""} notified.`,
+      );
+      setShowForm(false);
+      setFormData({
+        blood_type: "A+",
+        urgency_level: "critical",
+        message: "",
+        latitude: "",
+        longitude: "",
+      });
+      fetchRequests();
+    } catch (e) {
+      showToast("Something went wrong.", "error");
+    } finally {
+      setPosting(false);
+    }
+  };
 
   const handleCloseRequest = async (requestId) => {
     try {
-      const res = await fetch(`http://localhost:3000/hospital/request/${requestId}/close`, { method: 'PUT', headers: { Authorization: `Bearer ${token}` } })
-      const data = await res.json()
-      if (!res.ok) { showToast(data.error, 'error'); return }
-      showToast('Request closed successfully.')
-      fetchRequests()
+      const res = await fetch(
+        `http://localhost:3000/hospital/request/${requestId}/close`,
+        { method: "PUT", headers: { Authorization: `Bearer ${token}` } },
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error, "error");
+        return;
+      }
+      showToast("Request closed successfully.");
+      fetchRequests();
     } catch (e) {}
-  }
+  };
 
-  const handleLogout = () => { localStorage.clear(); navigate('/login') }
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
 
   const urgencyConfig = {
-    critical: { bg: '#fef2f2', color: '#B91C1C', border: '#fecaca', label: '🚨 Critical', dot: '#ef4444' },
-    high: { bg: '#fff7ed', color: '#c2410c', border: '#fed7aa', label: '🔴 High', dot: '#f97316' },
-    medium: { bg: '#fefce8', color: '#a16207', border: '#fde68a', label: '🟡 Medium', dot: '#eab308' },
-    low: { bg: '#f0fdf4', color: '#15803d', border: '#bbf7d0', label: '🟢 Low', dot: '#22c55e' },
-  }
+    critical: {
+      bg: "#fef2f2",
+      color: "#B91C1C",
+      border: "#fecaca",
+      label: "🚨 Critical",
+      dot: "#ef4444",
+    },
+    high: {
+      bg: "#fff7ed",
+      color: "#c2410c",
+      border: "#fed7aa",
+      label: "🔴 High",
+      dot: "#f97316",
+    },
+    medium: {
+      bg: "#fefce8",
+      color: "#a16207",
+      border: "#fde68a",
+      label: "🟡 Medium",
+      dot: "#eab308",
+    },
+    low: {
+      bg: "#f0fdf4",
+      color: "#15803d",
+      border: "#bbf7d0",
+      label: "🟢 Low",
+      dot: "#22c55e",
+    },
+  };
 
-  const activeCount = requests.filter(r => r.is_active).length
-  const totalResponses = requests.reduce((acc, r) => acc + (r.responses?.length || 0), 0)
-  const acceptedResponses = requests.reduce((acc, r) => acc + (r.responses?.filter(res => res.status === 'accepted').length || 0), 0)
+  const activeCount = requests.filter((r) => r.is_active).length;
+  const totalResponses = requests.reduce(
+    (acc, r) => acc + (r.responses?.length || 0),
+    0,
+  );
+  const acceptedResponses = requests.reduce(
+    (acc, r) =>
+      acc +
+      (r.responses?.filter((res) => res.status === "accepted").length || 0),
+    0,
+  );
 
   const navItems = [
-    { id: 'requests', icon: '📋', label: 'All Requests', count: activeCount },
-    { id: 'post', icon: '➕', label: 'Post Request' },
-    { id: 'profile', icon: '🏥', label: 'Hospital Profile' },
-  ]
+    { id: "requests", icon: "📋", label: "All Requests", count: activeCount },
+    { id: "post", icon: "➕", label: "Post Request" },
+    { id: "profile", icon: "🏥", label: "Hospital Profile" },
+  ];
 
-  if (loading) return (
-    <div style={{ minHeight: '100svh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fafafa', fontFamily: "'Inter',sans-serif" }}>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: 40, marginBottom: 16, animation: 'hb 1s ease infinite' }}>🏥</div>
-        <div style={{ fontSize: 16, fontWeight: 600, color: '#B91C1C' }}>Loading dashboard...</div>
-      </div>
-      <style>{`@keyframes hb{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}`}</style>
-    </div>
-  )
+
+
+  useEffect(() => {
+    const loadAllData = async () => {
+      setLoading(true);
+      try {
+        await Promise.all([fetchProfile(), fetchRequests()]);
+      } catch (error) {
+        console.error("Error loading dashboard data:", error);
+      }finally{
+        setLoading(false);
+      }
+    }
+    loadAllData()
+    const interval = setInterval(fetchRequests, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+   if (loading) return <AuthLoader status="Loading your dashboard..." />;
 
   return (
-    <div style={{ minHeight: '100svh', background: '#f8f9fa', fontFamily: "'Inter',sans-serif", display: 'flex', flexDirection: 'column' }}>
+    <div
+      style={{
+        minHeight: "100svh",
+        background: "#f8f9fa",
+        fontFamily: "'Inter',sans-serif",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
@@ -271,27 +358,48 @@ const HospitalDashboard = () => {
       `}</style>
 
       {/* Toast */}
-      {toast && <div className={`toast ${toast.type}`}>{toast.type === 'success' ? '✅' : '⚠️'} {toast.message}</div>}
+      {toast && (
+        <div className={`toast ${toast.type}`}>
+          {toast.type === "success" ? "✅" : "⚠️"} {toast.message}
+        </div>
+      )}
 
       {/* Drawer overlay */}
-      <div className={`drawer-ov ${sidebarOpen ? 'open' : ''}`} onClick={() => setSidebarOpen(false)} />
-      <div className={`drawer ${sidebarOpen ? 'open' : ''}`}>
-        <div className="sb-logo" style={{ padding: '20px 16px' }}>
+      <div
+        className={`drawer-ov ${sidebarOpen ? "open" : ""}`}
+        onClick={() => setSidebarOpen(false)}
+      />
+      <div className={`drawer ${sidebarOpen ? "open" : ""}`}>
+        <div className="sb-logo" style={{ padding: "20px 16px" }}>
           <div className="sb-logo-text">RedThread 🩸</div>
           <div className="sb-logo-sub">Hospital Dashboard</div>
         </div>
         <div className="sb-nav">
-          {navItems.map(item => (
-            <button key={item.id} className={`nav-item ${activeTab === item.id ? 'active' : ''}`} onClick={() => { setActiveTab(item.id); setSidebarOpen(false) }}>
-              <span className="nav-icon">{item.icon}</span>{item.label}
-              {item.count > 0 && <span className="nav-badge">{item.count}</span>}
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              className={`nav-item ${activeTab === item.id ? "active" : ""}`}
+              onClick={() => {
+                setActiveTab(item.id);
+                setSidebarOpen(false);
+              }}
+            >
+              <span className="nav-icon">{item.icon}</span>
+              {item.label}
+              {item.count > 0 && (
+                <span className="nav-badge">{item.count}</span>
+              )}
             </button>
           ))}
         </div>
-        <div className="sb-footer"><button className="logout-btn" onClick={handleLogout}>🚪 Logout</button></div>
+        <div className="sb-footer">
+          <button className="logout-btn" onClick={handleLogout}>
+            🚪 Logout
+          </button>
+        </div>
       </div>
 
-      <div style={{ display: 'flex', flex: 1, minHeight: '100svh' }}>
+      <div style={{ display: "flex", flex: 1, minHeight: "100svh" }}>
         {/* Desktop Sidebar */}
         <div className="sidebar">
           <div className="sb-logo">
@@ -299,19 +407,33 @@ const HospitalDashboard = () => {
             <div className="sb-logo-sub">Hospital Dashboard</div>
           </div>
           <div className="sb-nav">
-            {navItems.map(item => (
-              <button key={item.id} className={`nav-item ${activeTab === item.id ? 'active' : ''}`} onClick={() => setActiveTab(item.id)}>
-                <span className="nav-icon">{item.icon}</span>{item.label}
-                {item.count > 0 && <span className="nav-badge">{item.count}</span>}
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                className={`nav-item ${activeTab === item.id ? "active" : ""}`}
+                onClick={() => setActiveTab(item.id)}
+              >
+                <span className="nav-icon">{item.icon}</span>
+                {item.label}
+                {item.count > 0 && (
+                  <span className="nav-badge">{item.count}</span>
+                )}
               </button>
             ))}
           </div>
           <div className="sb-footer">
             <div className="sb-user">
-              <div className="user-av">{profile?.name?.charAt(0)?.toUpperCase() || 'H'}</div>
-              <div><div className="user-nm">{profile?.name}</div><div className="user-rl">Hospital</div></div>
+              <div className="user-av">
+                {profile?.name?.charAt(0)?.toUpperCase() || "H"}
+              </div>
+              <div>
+                <div className="user-nm">{profile?.name}</div>
+                <div className="user-rl">Hospital</div>
+              </div>
             </div>
-            <button className="logout-btn" onClick={handleLogout}>🚪 Logout</button>
+            <button className="logout-btn" onClick={handleLogout}>
+              🚪 Logout
+            </button>
           </div>
         </div>
 
@@ -320,9 +442,13 @@ const HospitalDashboard = () => {
           {/* Mobile topbar */}
           <div className="topbar">
             <div className="topbar-logo">RedThread 🩸</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: 13, color: '#888' }}>Hi, {profile?.name?.split(' ')[0]} 👋</span>
-              <button className="burger" onClick={() => setSidebarOpen(true)}>☰</button>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ fontSize: 13, color: "#888" }}>
+                Hi, {profile?.name?.split(" ")[0]} 👋
+              </span>
+              <button className="burger" onClick={() => setSidebarOpen(true)}>
+                ☰
+              </button>
             </div>
           </div>
 
@@ -330,18 +456,19 @@ const HospitalDashboard = () => {
           <div className="page-hdr">
             <div>
               <div className="page-title">
-                {activeTab === 'requests' && 'Blood Requests'}
-                {activeTab === 'post' && 'Post New Request'}
-                {activeTab === 'profile' && 'Hospital Profile'}
+                {activeTab === "requests" && "Blood Requests"}
+                {activeTab === "post" && "Post New Request"}
+                {activeTab === "profile" && "Hospital Profile"}
               </div>
               <div className="page-sub">
-                {activeTab === 'requests' && `${activeCount} active · ${requests.length} total`}
-                {activeTab === 'post' && 'Notify nearby donors instantly'}
-                {activeTab === 'profile' && 'Your hospital information'}
+                {activeTab === "requests" &&
+                  `${activeCount} active · ${requests.length} total`}
+                {activeTab === "post" && "Notify nearby donors instantly"}
+                {activeTab === "profile" && "Your hospital information"}
               </div>
             </div>
-            {activeTab === 'requests' && (
-              <button className="post-btn" onClick={() => setActiveTab('post')}>
+            {activeTab === "requests" && (
+              <button className="post-btn" onClick={() => setActiveTab("post")}>
                 ➕ Post Urgent Request
               </button>
             )}
@@ -352,96 +479,171 @@ const HospitalDashboard = () => {
             <div className="stats-row">
               <div className="stat-card stat-red">
                 <div className="stat-icon">📋</div>
-                <div className="stat-val" style={{ color: '#B91C1C' }}>{requests.length}</div>
+                <div className="stat-val" style={{ color: "#B91C1C" }}>
+                  {requests.length}
+                </div>
                 <div className="stat-lbl">Total Requests</div>
               </div>
               <div className="stat-card stat-green">
                 <div className="stat-icon">🟢</div>
-                <div className="stat-val" style={{ color: '#15803d' }}>{activeCount}</div>
+                <div className="stat-val" style={{ color: "#15803d" }}>
+                  {activeCount}
+                </div>
                 <div className="stat-lbl">Active Now</div>
               </div>
               <div className="stat-card stat-blue">
                 <div className="stat-icon">👥</div>
-                <div className="stat-val" style={{ color: '#1d4ed8' }}>{totalResponses}</div>
+                <div className="stat-val" style={{ color: "#1d4ed8" }}>
+                  {totalResponses}
+                </div>
                 <div className="stat-lbl">Total Responses</div>
               </div>
               <div className="stat-card stat-orange">
                 <div className="stat-icon">✅</div>
-                <div className="stat-val" style={{ color: '#c2410c' }}>{acceptedResponses}</div>
+                <div className="stat-val" style={{ color: "#c2410c" }}>
+                  {acceptedResponses}
+                </div>
                 <div className="stat-lbl">Donors Accepted</div>
               </div>
             </div>
 
             {/* REQUESTS TAB */}
-            {activeTab === 'requests' && (
-              requests.length === 0 ? (
-                <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f0f0f0' }}>
+            {activeTab === "requests" &&
+              (requests.length === 0 ? (
+                <div
+                  style={{
+                    background: "white",
+                    borderRadius: 16,
+                    border: "1px solid #f0f0f0",
+                  }}
+                >
                   <div className="empty">
                     <div className="empty-icon">🏥</div>
                     <div className="empty-title">No requests posted yet</div>
-                    <div className="empty-sub">Post your first urgent blood request to start finding nearby donors.</div>
-                    <button className="post-btn" style={{ margin: '20px auto 0', display: 'flex' }} onClick={() => setActiveTab('post')}>➕ Post First Request</button>
+                    <div className="empty-sub">
+                      Post your first urgent blood request to start finding
+                      nearby donors.
+                    </div>
+                    <button
+                      className="post-btn"
+                      style={{ margin: "20px auto 0", display: "flex" }}
+                      onClick={() => setActiveTab("post")}
+                    >
+                      ➕ Post First Request
+                    </button>
                   </div>
                 </div>
               ) : (
                 <div className="req-list">
                   {requests.map((req, i) => {
-                    const cfg = urgencyConfig[req.urgency_level] || urgencyConfig.low
+                    const cfg =
+                      urgencyConfig[req.urgency_level] || urgencyConfig.low;
                     return (
-                      <div key={req.id} className="req-card" style={{ animationDelay: `${i * 60}ms` }}>
+                      <div
+                        key={req.id}
+                        className="req-card"
+                        style={{ animationDelay: `${i * 60}ms` }}
+                      >
                         <div className="req-card-top">
                           <div className="req-left">
-                            <div className="req-blood-badge">{req.blood_type}</div>
+                            <div className="req-blood-badge">
+                              {req.blood_type}
+                            </div>
                             <div>
-                              <div className="req-blood-text">{req.blood_type} Blood Needed</div>
-                              <div className="req-time">🕐 {new Date(req.created_at).toLocaleString()}</div>
+                              <div className="req-blood-text">
+                                {req.blood_type} Blood Needed
+                              </div>
+                              <div className="req-time">
+                                🕐 {new Date(req.created_at).toLocaleString()}
+                              </div>
                             </div>
                           </div>
                           <div className="req-badges">
-                            <div className="urgency-badge" style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}>{cfg.label}</div>
-                            <div className={`status-badge ${req.is_active ? 'status-active' : 'status-closed'}`}>{req.is_active ? '● Active' : '○ Closed'}</div>
+                            <div
+                              className="urgency-badge"
+                              style={{
+                                background: cfg.bg,
+                                color: cfg.color,
+                                border: `1px solid ${cfg.border}`,
+                              }}
+                            >
+                              {cfg.label}
+                            </div>
+                            <div
+                              className={`status-badge ${req.is_active ? "status-active" : "status-closed"}`}
+                            >
+                              {req.is_active ? "● Active" : "○ Closed"}
+                            </div>
                           </div>
                         </div>
-                        {(req.message || (req.responses && req.responses.length > 0) || req.is_active) && (
+                        {(req.message ||
+                          (req.responses && req.responses.length > 0) ||
+                          req.is_active) && (
                           <div className="req-card-body">
-                            {req.message && <div className="req-msg">"{req.message}"</div>}
+                            {req.message && (
+                              <div className="req-msg">"{req.message}"</div>
+                            )}
                             {req.responses && req.responses.length > 0 && (
                               <div className="responses-section">
-                                <div className="responses-title">👥 Donor Responses ({req.responses.length})</div>
+                                <div className="responses-title">
+                                  👥 Donor Responses ({req.responses.length})
+                                </div>
                                 <div className="responses-list">
                                   {req.responses.map((res, j) => (
                                     <div key={j} className="response-item">
-                                      <span className="res-icon">{res.status === 'accepted' ? '✅' : '❌'}</span>
-                                      <span className="res-name">{res.profiles?.name}</span>
-                                      <span className={res.status === 'accepted' ? 'res-status-accepted' : 'res-status-rejected'}>{res.status}</span>
-                                      <span className="res-phone">{res.profiles?.phone}</span>
+                                      <span className="res-icon">
+                                        {res.status === "accepted"
+                                          ? "✅"
+                                          : "❌"}
+                                      </span>
+                                      <span className="res-name">
+                                        {res.profiles?.name}
+                                      </span>
+                                      <span
+                                        className={
+                                          res.status === "accepted"
+                                            ? "res-status-accepted"
+                                            : "res-status-rejected"
+                                        }
+                                      >
+                                        {res.status}
+                                      </span>
+                                      <span className="res-phone">
+                                        {res.profiles?.phone}
+                                      </span>
                                     </div>
                                   ))}
                                 </div>
                               </div>
                             )}
                             {req.is_active && (
-                              <button className="close-btn" onClick={() => handleCloseRequest(req.id)}>
+                              <button
+                                className="close-btn"
+                                onClick={() => handleCloseRequest(req.id)}
+                              >
                                 ✕ Close Request
                               </button>
                             )}
                           </div>
                         )}
                       </div>
-                    )
+                    );
                   })}
                 </div>
-              )
-            )}
+              ))}
 
             {/* POST TAB */}
-            {activeTab === 'post' && (
+            {activeTab === "post" && (
               <div className="form-card">
                 <div className="form-hdr">
                   <div className="form-hdr-icon">🚨</div>
                   <div>
-                    <div className="form-hdr-title">New Urgent Blood Request</div>
-                    <div className="form-hdr-sub">Matching donors within 10km will be notified instantly</div>
+                    <div className="form-hdr-title">
+                      New Urgent Blood Request
+                    </div>
+                    <div className="form-hdr-sub">
+                      Matching donors within 10km will be notified instantly
+                    </div>
                   </div>
                 </div>
                 <div className="form-body">
@@ -449,9 +651,20 @@ const HospitalDashboard = () => {
                     <div className="fgrp full">
                       <label className="flabel">Blood Type Needed</label>
                       <div className="blood-grid">
-                        {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(bt => (
-                          <button key={bt} type="button" className={`blood-option ${formData.blood_type === bt ? 'selected' : ''}`} onClick={() => setFormData({ ...formData, blood_type: bt })}>{bt}</button>
-                        ))}
+                        {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(
+                          (bt) => (
+                            <button
+                              key={bt}
+                              type="button"
+                              className={`blood-option ${formData.blood_type === bt ? "selected" : ""}`}
+                              onClick={() =>
+                                setFormData({ ...formData, blood_type: bt })
+                              }
+                            >
+                              {bt}
+                            </button>
+                          ),
+                        )}
                       </div>
                     </div>
 
@@ -459,13 +672,59 @@ const HospitalDashboard = () => {
                       <label className="flabel">Urgency Level</label>
                       <div className="urgency-grid">
                         {[
-                          { val: 'low', label: '🟢 Low', bg: '#f0fdf4', color: '#15803d', border: '#bbf7d0' },
-                          { val: 'medium', label: '🟡 Medium', bg: '#fefce8', color: '#a16207', border: '#fde68a' },
-                          { val: 'high', label: '🔴 High', bg: '#fff7ed', color: '#c2410c', border: '#fed7aa' },
-                          { val: 'critical', label: '🚨 Critical', bg: '#fef2f2', color: '#B91C1C', border: '#fecaca' },
-                        ].map(u => (
-                          <button key={u.val} type="button" className="urg-option" onClick={() => setFormData({ ...formData, urgency_level: u.val })}
-                            style={{ background: formData.urgency_level === u.val ? u.bg : 'white', color: formData.urgency_level === u.val ? u.color : '#888', borderColor: formData.urgency_level === u.val ? u.border : '#e5e7eb', fontWeight: formData.urgency_level === u.val ? 800 : 600 }}>
+                          {
+                            val: "low",
+                            label: "🟢 Low",
+                            bg: "#f0fdf4",
+                            color: "#15803d",
+                            border: "#bbf7d0",
+                          },
+                          {
+                            val: "medium",
+                            label: "🟡 Medium",
+                            bg: "#fefce8",
+                            color: "#a16207",
+                            border: "#fde68a",
+                          },
+                          {
+                            val: "high",
+                            label: "🔴 High",
+                            bg: "#fff7ed",
+                            color: "#c2410c",
+                            border: "#fed7aa",
+                          },
+                          {
+                            val: "critical",
+                            label: "🚨 Critical",
+                            bg: "#fef2f2",
+                            color: "#B91C1C",
+                            border: "#fecaca",
+                          },
+                        ].map((u) => (
+                          <button
+                            key={u.val}
+                            type="button"
+                            className="urg-option"
+                            onClick={() =>
+                              setFormData({ ...formData, urgency_level: u.val })
+                            }
+                            style={{
+                              background:
+                                formData.urgency_level === u.val
+                                  ? u.bg
+                                  : "white",
+                              color:
+                                formData.urgency_level === u.val
+                                  ? u.color
+                                  : "#888",
+                              borderColor:
+                                formData.urgency_level === u.val
+                                  ? u.border
+                                  : "#e5e7eb",
+                              fontWeight:
+                                formData.urgency_level === u.val ? 800 : 600,
+                            }}
+                          >
                             {u.label}
                           </button>
                         ))}
@@ -474,21 +733,57 @@ const HospitalDashboard = () => {
 
                     <div className="fgrp full">
                       <label className="flabel">Message (Optional)</label>
-                      <textarea className="ftextarea" name="message" value={formData.message} onChange={e => setFormData({ ...formData, message: e.target.value })} placeholder="Add details about the request, patient condition, urgency..." />
+                      <textarea
+                        className="ftextarea"
+                        name="message"
+                        value={formData.message}
+                        onChange={(e) =>
+                          setFormData({ ...formData, message: e.target.value })
+                        }
+                        placeholder="Add details about the request, patient condition, urgency..."
+                      />
                     </div>
 
                     <div className="fgrp full">
                       <label className="flabel">Hospital Location</label>
-                      <button type="button" className="loc-btn" onClick={handleGetLocation}>📍 Use My Current Location</button>
+                      <button
+                        type="button"
+                        className="loc-btn"
+                        onClick={handleGetLocation}
+                      >
+                        📍 Use My Current Location
+                      </button>
                       {formData.latitude && (
-                        <div className="loc-set">✅ Location set: {Number(formData.latitude).toFixed(4)}, {Number(formData.longitude).toFixed(4)}</div>
+                        <div className="loc-set">
+                          ✅ Location set:{" "}
+                          {Number(formData.latitude).toFixed(4)},{" "}
+                          {Number(formData.longitude).toFixed(4)}
+                        </div>
                       )}
                     </div>
 
-                    <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
-                      <button type="button" className="close-btn" style={{ flex: 1, justifyContent: 'center' }} onClick={() => setActiveTab('requests')}>Cancel</button>
-                      <button type="submit" className="submit-btn" style={{ flex: 2 }} disabled={posting}>
-                        {posting ? <><div className="spinner" /> Posting & Notifying...</> : '🚨 Post Request & Notify Donors'}
+                    <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+                      <button
+                        type="button"
+                        className="close-btn"
+                        style={{ flex: 1, justifyContent: "center" }}
+                        onClick={() => setActiveTab("requests")}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="submit-btn"
+                        style={{ flex: 2 }}
+                        disabled={posting}
+                      >
+                        {posting ? (
+                          <>
+                            <div className="spinner" /> Posting & Notifying...
+                          </>
+                        ) : (
+                          "🚨 Post Request & Notify Donors"
+                        )}
                       </button>
                     </div>
                   </form>
@@ -497,28 +792,58 @@ const HospitalDashboard = () => {
             )}
 
             {/* PROFILE TAB */}
-            {activeTab === 'profile' && (
+            {activeTab === "profile" && (
               <div>
                 <div className="profile-hero">
                   <div className="profile-hero-content">
-                    <div className="profile-av-lg">{profile?.name?.charAt(0)?.toUpperCase()}</div>
+                    <div className="profile-av-lg">
+                      {profile?.name?.charAt(0)?.toUpperCase()}
+                    </div>
                     <div>
                       <div className="profile-hero-name">{profile?.name}</div>
-                      <div className="profile-hero-sub">🏥 Verified Hospital · RedThread Partner</div>
+                      <div className="profile-hero-sub">
+                        🏥 Verified Hospital · RedThread Partner
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f0f0f0', overflow: 'hidden' }}>
-                  <div style={{ padding: 'clamp(16px,2.5vw,22px)', borderBottom: '1px solid #f5f5f5', fontWeight: 700, fontSize: 15, color: '#111' }}>📋 Hospital Information</div>
-                  <div style={{ padding: 'clamp(14px,2vw,20px)' }}>
+                <div
+                  style={{
+                    background: "white",
+                    borderRadius: 16,
+                    border: "1px solid #f0f0f0",
+                    overflow: "hidden",
+                  }}
+                >
+                  <div
+                    style={{
+                      padding: "clamp(16px,2.5vw,22px)",
+                      borderBottom: "1px solid #f5f5f5",
+                      fontWeight: 700,
+                      fontSize: 15,
+                      color: "#111",
+                    }}
+                  >
+                    📋 Hospital Information
+                  </div>
+                  <div style={{ padding: "clamp(14px,2vw,20px)" }}>
                     <div className="profile-grid">
                       {[
-                        { label: 'Hospital Name', value: profile?.name },
-                        { label: 'Email', value: profile?.email },
-                        { label: 'Phone', value: profile?.phone || 'Not provided' },
-                        { label: 'Role', value: 'Hospital' },
-                        { label: 'Total Requests', value: `${requests.length} posted` },
-                        { label: 'Active Requests', value: `${activeCount} open` },
+                        { label: "Hospital Name", value: profile?.name },
+                        { label: "Email", value: profile?.email },
+                        {
+                          label: "Phone",
+                          value: profile?.phone || "Not provided",
+                        },
+                        { label: "Role", value: "Hospital" },
+                        {
+                          label: "Total Requests",
+                          value: `${requests.length} posted`,
+                        },
+                        {
+                          label: "Active Requests",
+                          value: `${activeCount} open`,
+                        },
                       ].map((f, i) => (
                         <div key={i} className="pfield">
                           <div className="pfield-label">{f.label}</div>
@@ -534,7 +859,7 @@ const HospitalDashboard = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default HospitalDashboard
+export default HospitalDashboard;

@@ -1,142 +1,233 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import AuthLoader from "../components/AuthLoader";
 
 const DonorDashboard = () => {
-  const navigate = useNavigate()
-  const [profile, setProfile] = useState(null)
-  const [donorProfile, setDonorProfile] = useState(null)
-  const [requests, setRequests] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [updatingProfile, setUpdatingProfile] = useState(false)
-  const [respondedRequests, setRespondedRequests] = useState([])
-  const [activeTab, setActiveTab] = useState('requests')
-  const [donorForm, setDonorForm] = useState({ blood_type: 'A+', is_available: true, latitude: '', longitude: '' })
-  const [toast, setToast] = useState(null)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const navigate = useNavigate();
+  const [profile, setProfile] = useState(null);
+  const [donorProfile, setDonorProfile] = useState(null);
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [updatingProfile, setUpdatingProfile] = useState(false);
+  const [respondedRequests, setRespondedRequests] = useState([]);
+  const [activeTab, setActiveTab] = useState("requests");
+  const [donorForm, setDonorForm] = useState({
+    blood_type: "A+",
+    is_available: true,
+    latitude: "",
+    longitude: "",
+  });
+  const [toast, setToast] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem("token");
 
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type })
-    setTimeout(() => setToast(null), 3500)
-  }
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3500);
+  };
 
   useEffect(() => {
-    fetchProfile()
-    fetchDonorProfile()
-    fetchRequests()
-    fetchRespondedRequests()
-    const interval = setInterval(() => fetchRequests(), 10000)
-    return () => clearInterval(interval)
-  }, [])
+    const loadAllData = async () => {
+      setLoading(true);
+      try {
+        await Promise.all(
+          fetchProfile(),
+          fetchDonorProfile(),
+          fetchRequests(),
+          fetchRespondedRequests(),
+        );
+      } catch (error) {
+        console.error("Error loading dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadAllData();
+    const interval = setInterval(() => fetchRequests(), 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   const fetchProfile = async () => {
     try {
-      const res = await fetch('http://localhost:3000/auth/profile', { headers: { 'Authorization': `Bearer ${token}` } })
-      const data = await res.json()
-      setProfile(data.user)
+      const res = await fetch("http://localhost:3000/auth/profile", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setProfile(data.user);
     } catch (e) {}
-  }
+  };
 
   const fetchDonorProfile = async () => {
     try {
-      const res = await fetch('http://localhost:3000/donor/profile', { headers: { 'Authorization': `Bearer ${token}` } })
-      const data = await res.json()
-      setDonorProfile(data.donor)
-      setDonorForm({ blood_type: data.donor.blood_type || 'A+', is_available: data.donor.is_available, latitude: data.donor.latitude || '', longitude: data.donor.longitude || '' })
+      const res = await fetch("http://localhost:3000/donor/profile", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setDonorProfile(data.donor);
+      setDonorForm({
+        blood_type: data.donor.blood_type || "A+",
+        is_available: data.donor.is_available,
+        latitude: data.donor.latitude || "",
+        longitude: data.donor.longitude || "",
+      });
     } catch (e) {}
-  }
+  };
 
   const fetchRequests = async () => {
     try {
-      const res = await fetch('http://localhost:3000/donor/requests', { headers: { 'Authorization': `Bearer ${token}` } })
-      const data = await res.json()
-      setRequests(data.requests)
-    } catch (e) {} finally { setLoading(false) }
-  }
+      const res = await fetch("http://localhost:3000/donor/requests", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setRequests(data.requests);
+    } catch (e) {}
+  };
 
   const fetchRespondedRequests = async () => {
     try {
-      const res = await fetch('http://localhost:3000/donor/history', { headers: { 'Authorization': `Bearer ${token}` } })
-      const data = await res.json()
-      setRespondedRequests(data.history.map(h => h.request_id))
+      const res = await fetch("http://localhost:3000/donor/history", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setRespondedRequests(data.history.map((h) => h.request_id));
     } catch (e) {}
-  }
+  };
 
   const handleUpdateDonorProfile = async (e) => {
-    e.preventDefault()
-    setUpdatingProfile(true)
+    e.preventDefault();
+    setUpdatingProfile(true);
     try {
-      const res = await fetch('http://localhost:3000/donor/profile', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify(donorForm)
-      })
-      const data = await res.json()
-      if (!res.ok) { showToast(data.error, 'error'); return }
-      showToast('Profile updated successfully!')
-      fetchDonorProfile()
-      fetchRequests()
-    } catch (e) { showToast('Something went wrong.', 'error') }
-    finally { setUpdatingProfile(false) }
-  }
+      const res = await fetch("http://localhost:3000/donor/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(donorForm),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error, "error");
+        return;
+      }
+      showToast("Profile updated successfully!");
+      fetchDonorProfile();
+      fetchRequests();
+    } catch (e) {
+      showToast("Something went wrong.", "error");
+    } finally {
+      setUpdatingProfile(false);
+    }
+  };
 
   const handleGetLocation = () => {
-    navigator.geolocation.getCurrentPosition((pos) => {
-      setDonorForm({ ...donorForm, latitude: pos.coords.latitude, longitude: pos.coords.longitude })
-      showToast('Location captured successfully!')
-    }, () => showToast('Could not get location.', 'error'))
-  }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setDonorForm({
+          ...donorForm,
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+        });
+        showToast("Location captured successfully!");
+      },
+      () => showToast("Could not get location.", "error"),
+    );
+  };
 
   const handleAccept = async (requestId) => {
     try {
-      const res = await fetch(`http://localhost:3000/donor/request/${requestId}/accept`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } })
-      const data = await res.json()
-      if (!res.ok) { showToast(data.error, 'error'); return }
-      showToast('Request accepted! Hospital will be notified. 🎉')
-      fetchRequests()
-      fetchRespondedRequests()
+      const res = await fetch(
+        `http://localhost:3000/donor/request/${requestId}/accept`,
+        { method: "POST", headers: { Authorization: `Bearer ${token}` } },
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error, "error");
+        return;
+      }
+      showToast("Request accepted! Hospital will be notified. 🎉");
+      fetchRequests();
+      fetchRespondedRequests();
     } catch (e) {}
-  }
+  };
 
   const handleReject = async (requestId) => {
     try {
-      const res = await fetch(`http://localhost:3000/donor/request/${requestId}/reject`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } })
-      const data = await res.json()
-      if (!res.ok) { showToast(data.error, 'error'); return }
-      showToast('Request declined.')
-      fetchRequests()
-      fetchRespondedRequests()
+      const res = await fetch(
+        `http://localhost:3000/donor/request/${requestId}/reject`,
+        { method: "POST", headers: { Authorization: `Bearer ${token}` } },
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error, "error");
+        return;
+      }
+      showToast("Request declined.");
+      fetchRequests();
+      fetchRespondedRequests();
     } catch (e) {}
-  }
+  };
 
-  const handleLogout = () => { localStorage.clear(); navigate('/login') }
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
 
   const urgencyConfig = {
-    critical: { bg: '#fef2f2', color: '#B91C1C', border: '#fecaca', dot: '#ef4444', label: '🚨 Critical' },
-    high: { bg: '#fff7ed', color: '#c2410c', border: '#fed7aa', dot: '#f97316', label: '🔴 High' },
-    medium: { bg: '#fefce8', color: '#a16207', border: '#fde68a', dot: '#eab308', label: '🟡 Medium' },
-    low: { bg: '#f0fdf4', color: '#15803d', border: '#bbf7d0', dot: '#22c55e', label: '🟢 Low' },
-  }
+    critical: {
+      bg: "#fef2f2",
+      color: "#B91C1C",
+      border: "#fecaca",
+      dot: "#ef4444",
+      label: "🚨 Critical",
+    },
+    high: {
+      bg: "#fff7ed",
+      color: "#c2410c",
+      border: "#fed7aa",
+      dot: "#f97316",
+      label: "🔴 High",
+    },
+    medium: {
+      bg: "#fefce8",
+      color: "#a16207",
+      border: "#fde68a",
+      dot: "#eab308",
+      label: "🟡 Medium",
+    },
+    low: {
+      bg: "#f0fdf4",
+      color: "#15803d",
+      border: "#bbf7d0",
+      dot: "#22c55e",
+      label: "🟢 Low",
+    },
+  };
 
   const navItems = [
-    { id: 'requests', icon: '🩸', label: 'Blood Requests', count: requests.length },
-    { id: 'settings', icon: '⚙️', label: 'Donor Settings' },
-    { id: 'profile', icon: '👤', label: 'My Profile' },
-  ]
+    {
+      id: "requests",
+      icon: "🩸",
+      label: "Blood Requests",
+      count: requests.length,
+    },
+    { id: "settings", icon: "⚙️", label: "Donor Settings" },
+    { id: "profile", icon: "👤", label: "My Profile" },
+  ];
 
-  if (loading) return (
-    <div style={{ minHeight: '100svh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fafafa', fontFamily: "'Inter', sans-serif" }}>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: 40, marginBottom: 16, animation: 'heartbeat 1s ease infinite' }}>🩸</div>
-        <div style={{ fontSize: 16, fontWeight: 600, color: '#B91C1C' }}>Loading your dashboard...</div>
-      </div>
-      <style>{`@keyframes heartbeat{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}`}</style>
-    </div>
-  )
+  if (loading) return <AuthLoader status="Loading your dashboard..." />;
 
   return (
-    <div style={{ minHeight: '100svh', background: '#f8f9fa', fontFamily: "'Inter', sans-serif", display: 'flex', flexDirection: 'column' }}>
+    <div
+      style={{
+        minHeight: "100svh",
+        background: "#f8f9fa",
+        fontFamily: "'Inter', sans-serif",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -269,34 +360,48 @@ const DonorDashboard = () => {
       {/* Toast */}
       {toast && (
         <div className={`toast ${toast.type}`}>
-          {toast.type === 'success' ? '✅' : '⚠️'} {toast.message}
+          {toast.type === "success" ? "✅" : "⚠️"} {toast.message}
         </div>
       )}
 
       {/* Mobile drawer overlay */}
-      <div className={`drawer-overlay ${sidebarOpen ? 'open' : ''}`} onClick={() => setSidebarOpen(false)} />
+      <div
+        className={`drawer-overlay ${sidebarOpen ? "open" : ""}`}
+        onClick={() => setSidebarOpen(false)}
+      />
 
       {/* Mobile drawer */}
-      <div className={`drawer ${sidebarOpen ? 'open' : ''}`}>
-        <div className="sidebar-logo" style={{ padding: '20px 16px' }}>
+      <div className={`drawer ${sidebarOpen ? "open" : ""}`}>
+        <div className="sidebar-logo" style={{ padding: "20px 16px" }}>
           <div className="sidebar-logo-text">RedThread 🩸</div>
           <div className="sidebar-logo-sub">Donor Dashboard</div>
         </div>
         <div className="sidebar-nav">
-          {navItems.map(item => (
-            <button key={item.id} className={`nav-item ${activeTab === item.id ? 'active' : ''}`} onClick={() => { setActiveTab(item.id); setSidebarOpen(false) }}>
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              className={`nav-item ${activeTab === item.id ? "active" : ""}`}
+              onClick={() => {
+                setActiveTab(item.id);
+                setSidebarOpen(false);
+              }}
+            >
               <span className="nav-icon">{item.icon}</span>
               {item.label}
-              {item.count > 0 && <span className="nav-badge">{item.count}</span>}
+              {item.count > 0 && (
+                <span className="nav-badge">{item.count}</span>
+              )}
             </button>
           ))}
         </div>
         <div className="sidebar-footer">
-          <button className="logout-btn" onClick={handleLogout}>🚪 Logout</button>
+          <button className="logout-btn" onClick={handleLogout}>
+            🚪 Logout
+          </button>
         </div>
       </div>
 
-      <div style={{ display: 'flex', flex: 1, minHeight: '100svh' }}>
+      <div style={{ display: "flex", flex: 1, minHeight: "100svh" }}>
         {/* Desktop Sidebar */}
         <div className="sidebar">
           <div className="sidebar-logo">
@@ -304,35 +409,48 @@ const DonorDashboard = () => {
             <div className="sidebar-logo-sub">Donor Dashboard</div>
           </div>
           <div className="sidebar-nav">
-            {navItems.map(item => (
-              <button key={item.id} className={`nav-item ${activeTab === item.id ? 'active' : ''}`} onClick={() => setActiveTab(item.id)}>
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                className={`nav-item ${activeTab === item.id ? "active" : ""}`}
+                onClick={() => setActiveTab(item.id)}
+              >
                 <span className="nav-icon">{item.icon}</span>
                 {item.label}
-                {item.count > 0 && <span className="nav-badge">{item.count}</span>}
+                {item.count > 0 && (
+                  <span className="nav-badge">{item.count}</span>
+                )}
               </button>
             ))}
           </div>
           <div className="sidebar-footer">
             <div className="sidebar-user">
-              <div className="user-avatar">{profile?.name?.charAt(0)?.toUpperCase() || 'D'}</div>
+              <div className="user-avatar">
+                {profile?.name?.charAt(0)?.toUpperCase() || "D"}
+              </div>
               <div>
                 <div className="user-name">{profile?.name}</div>
                 <div className="user-role">Blood Donor</div>
               </div>
             </div>
-            <button className="logout-btn" onClick={handleLogout}>🚪 Logout</button>
+            <button className="logout-btn" onClick={handleLogout}>
+              🚪 Logout
+            </button>
           </div>
         </div>
 
         {/* Main */}
         <div className="main-content">
-
           {/* Mobile topbar */}
           <div className="topbar">
             <div className="topbar-logo">RedThread 🩸</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: 13, color: '#888' }}>Hi, {profile?.name?.split(' ')[0]} 👋</span>
-              <button className="burger" onClick={() => setSidebarOpen(true)}>☰</button>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ fontSize: 13, color: "#888" }}>
+                Hi, {profile?.name?.split(" ")[0]} 👋
+              </span>
+              <button className="burger" onClick={() => setSidebarOpen(true)}>
+                ☰
+              </button>
             </div>
           </div>
 
@@ -340,28 +458,40 @@ const DonorDashboard = () => {
           <div className="page-header">
             <div>
               <div className="page-title">
-                {activeTab === 'requests' && 'Blood Requests'}
-                {activeTab === 'settings' && 'Donor Settings'}
-                {activeTab === 'profile' && 'My Profile'}
+                {activeTab === "requests" && "Blood Requests"}
+                {activeTab === "settings" && "Donor Settings"}
+                {activeTab === "profile" && "My Profile"}
               </div>
               <div className="page-sub">
-                {activeTab === 'requests' && `${requests.length} active request${requests.length !== 1 ? 's' : ''} near you`}
-                {activeTab === 'settings' && 'Update your blood type, availability and location'}
-                {activeTab === 'profile' && 'Your personal information'}
+                {activeTab === "requests" &&
+                  `${requests.length} active request${requests.length !== 1 ? "s" : ""} near you`}
+                {activeTab === "settings" &&
+                  "Update your blood type, availability and location"}
+                {activeTab === "profile" && "Your personal information"}
               </div>
             </div>
-            <div className={`status-pill ${donorProfile?.is_available ? 'status-available' : 'status-unavailable'}`}>
-              <div className="status-dot" style={{ background: donorProfile?.is_available ? '#22c55e' : '#ef4444' }} />
-              {donorProfile?.is_available ? 'Available' : 'Unavailable'}
+            <div
+              className={`status-pill ${donorProfile?.is_available ? "status-available" : "status-unavailable"}`}
+            >
+              <div
+                className="status-dot"
+                style={{
+                  background: donorProfile?.is_available
+                    ? "#22c55e"
+                    : "#ef4444",
+                }}
+              />
+              {donorProfile?.is_available ? "Available" : "Unavailable"}
             </div>
           </div>
 
           <div className="content-area">
-
             {/* Stats row (always visible) */}
             <div className="stats-row">
               <div className="stat-card">
-                <div className="stat-val">{donorProfile?.blood_type || '—'}</div>
+                <div className="stat-val">
+                  {donorProfile?.blood_type || "—"}
+                </div>
                 <div className="stat-lbl">Blood Type</div>
               </div>
               <div className="stat-card">
@@ -375,53 +505,88 @@ const DonorDashboard = () => {
             </div>
 
             {/* REQUESTS TAB */}
-            {activeTab === 'requests' && (
-              requests.length === 0 ? (
+            {activeTab === "requests" &&
+              (requests.length === 0 ? (
                 <div className="card">
                   <div className="empty-state">
                     <div className="empty-icon">🩸</div>
-                    <div className="empty-title">No active requests right now</div>
-                    <div className="empty-sub">You'll see urgent blood requests here when hospitals near you post them.</div>
-                    {(!donorProfile?.blood_type || !donorProfile?.latitude) && (
-                      <div className="empty-warning">⚠️ Complete your donor settings to start seeing requests!</div>
+                    <div className="empty-title">
+                      No active requests right now
+                    </div>
+                    <div className="empty-sub">
+                      You'll see urgent blood requests here when hospitals near
+                      you post them.
+                    </div>
+                    {donorProfile && (!donorProfile.blood_type || !donorProfile.latitude) && (
+                      <div className="empty-warning">
+                        ⚠️ Complete your donor settings to start seeing
+                        requests!
+                      </div>
                     )}
                   </div>
                 </div>
               ) : (
                 <div className="requests-list">
                   {requests.map((req, i) => {
-                    const cfg = urgencyConfig[req.urgency_level] || urgencyConfig.low
+                    const cfg =
+                      urgencyConfig[req.urgency_level] || urgencyConfig.low;
                     return (
-                      <div key={req.id} className="req-card" style={{ animationDelay: `${i * 60}ms` }}>
+                      <div
+                        key={req.id}
+                        className="req-card"
+                        style={{ animationDelay: `${i * 60}ms` }}
+                      >
                         <div className="req-top">
                           <div>
                             <div className="req-blood">{req.blood_type}</div>
-                            <div className="req-hospital">🏥 {req.profiles?.name}</div>
+                            <div className="req-hospital">
+                              🏥 {req.profiles?.name}
+                            </div>
                           </div>
-                          <div className="urgency-badge" style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}>
+                          <div
+                            className="urgency-badge"
+                            style={{
+                              background: cfg.bg,
+                              color: cfg.color,
+                              border: `1px solid ${cfg.border}`,
+                            }}
+                          >
                             {cfg.label}
                           </div>
                         </div>
-                        {req.message && <div className="req-msg">"{req.message}"</div>}
+                        {req.message && (
+                          <div className="req-msg">"{req.message}"</div>
+                        )}
                         <div className="req-actions">
                           {respondedRequests.includes(req.id) ? (
-                            <div className="responded-badge">✅ Already Responded</div>
+                            <div className="responded-badge">
+                              ✅ Already Responded
+                            </div>
                           ) : (
                             <>
-                              <button className="btn-accept" onClick={() => handleAccept(req.id)}>✅ Accept</button>
-                              <button className="btn-reject" onClick={() => handleReject(req.id)}>❌ Decline</button>
+                              <button
+                                className="btn-accept"
+                                onClick={() => handleAccept(req.id)}
+                              >
+                                ✅ Accept
+                              </button>
+                              <button
+                                className="btn-reject"
+                                onClick={() => handleReject(req.id)}
+                              >
+                                ❌ Decline
+                              </button>
                             </>
                           )}
                         </div>
                       </div>
-                    )
+                    );
                   })}
                 </div>
-              )
-            )}
+              ))}
 
             {/* SETTINGS TAB */}
-            {activeTab === 'settings' && (
+            {activeTab === "settings" && (
               <div className="card">
                 <div className="card-header">
                   <div className="card-title">⚙️ Update Donor Settings</div>
@@ -431,13 +596,44 @@ const DonorDashboard = () => {
                     <div className="settings-grid">
                       <div className="form-group">
                         <label className="form-label">Blood Type</label>
-                        <select className="form-select" value={donorForm.blood_type} onChange={e => setDonorForm({ ...donorForm, blood_type: e.target.value })}>
-                          {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(bt => <option key={bt} value={bt}>{bt}</option>)}
+                        <select
+                          className="form-select"
+                          value={donorForm.blood_type}
+                          onChange={(e) =>
+                            setDonorForm({
+                              ...donorForm,
+                              blood_type: e.target.value,
+                            })
+                          }
+                        >
+                          {[
+                            "A+",
+                            "A-",
+                            "B+",
+                            "B-",
+                            "AB+",
+                            "AB-",
+                            "O+",
+                            "O-",
+                          ].map((bt) => (
+                            <option key={bt} value={bt}>
+                              {bt}
+                            </option>
+                          ))}
                         </select>
                       </div>
                       <div className="form-group">
                         <label className="form-label">Availability</label>
-                        <select className="form-select" value={donorForm.is_available} onChange={e => setDonorForm({ ...donorForm, is_available: e.target.value === 'true' })}>
+                        <select
+                          className="form-select"
+                          value={donorForm.is_available}
+                          onChange={(e) =>
+                            setDonorForm({
+                              ...donorForm,
+                              is_available: e.target.value === "true",
+                            })
+                          }
+                        >
                           <option value="true">✅ Available</option>
                           <option value="false">❌ Not Available</option>
                         </select>
@@ -445,15 +641,33 @@ const DonorDashboard = () => {
                     </div>
                     <div className="form-group">
                       <label className="form-label">Location</label>
-                      <button type="button" className="loc-btn" onClick={handleGetLocation}>📍 Use My Current Location</button>
+                      <button
+                        type="button"
+                        className="loc-btn"
+                        onClick={handleGetLocation}
+                      >
+                        📍 Use My Current Location
+                      </button>
                       {donorForm.latitude && (
                         <div className="loc-set">
-                          ✅ Location set: {Number(donorForm.latitude).toFixed(4)}, {Number(donorForm.longitude).toFixed(4)}
+                          ✅ Location set:{" "}
+                          {Number(donorForm.latitude).toFixed(4)},{" "}
+                          {Number(donorForm.longitude).toFixed(4)}
                         </div>
                       )}
                     </div>
-                    <button type="submit" className="save-btn" disabled={updatingProfile}>
-                      {updatingProfile ? <><div className="spinner" /> Saving...</> : '💾 Save Settings'}
+                    <button
+                      type="submit"
+                      className="save-btn"
+                      disabled={updatingProfile}
+                    >
+                      {updatingProfile ? (
+                        <>
+                          <div className="spinner" /> Saving...
+                        </>
+                      ) : (
+                        "💾 Save Settings"
+                      )}
                     </button>
                   </form>
                 </div>
@@ -461,29 +675,83 @@ const DonorDashboard = () => {
             )}
 
             {/* PROFILE TAB */}
-            {activeTab === 'profile' && (
+            {activeTab === "profile" && (
               <div className="card">
                 <div className="card-header">
                   <div className="card-title">👤 Your Profile</div>
                 </div>
                 <div className="card-body">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24, padding: '16px 20px', background: 'linear-gradient(135deg,#fef2f2,#fff5f5)', borderRadius: 14, border: '1px solid #fecaca' }}>
-                    <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg,#B91C1C,#ef4444)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 800, color: 'white', flexShrink: 0 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 16,
+                      marginBottom: 24,
+                      padding: "16px 20px",
+                      background: "linear-gradient(135deg,#fef2f2,#fff5f5)",
+                      borderRadius: 14,
+                      border: "1px solid #fecaca",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 56,
+                        height: 56,
+                        borderRadius: "50%",
+                        background: "linear-gradient(135deg,#B91C1C,#ef4444)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 22,
+                        fontWeight: 800,
+                        color: "white",
+                        flexShrink: 0,
+                      }}
+                    >
                       {profile?.name?.charAt(0)?.toUpperCase()}
                     </div>
                     <div>
-                      <div style={{ fontSize: 18, fontWeight: 800, color: '#111', letterSpacing: '-0.3px' }}>{profile?.name}</div>
-                      <div style={{ fontSize: 13, color: '#B91C1C', fontWeight: 600, marginTop: 3 }}>🩸 Blood Donor · {donorProfile?.blood_type || 'Not set'}</div>
+                      <div
+                        style={{
+                          fontSize: 18,
+                          fontWeight: 800,
+                          color: "#111",
+                          letterSpacing: "-0.3px",
+                        }}
+                      >
+                        {profile?.name}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 13,
+                          color: "#B91C1C",
+                          fontWeight: 600,
+                          marginTop: 3,
+                        }}
+                      >
+                        🩸 Blood Donor · {donorProfile?.blood_type || "Not set"}
+                      </div>
                     </div>
                   </div>
                   <div className="profile-grid">
                     {[
-                      { label: 'Full Name', value: profile?.name },
-                      { label: 'Email', value: profile?.email },
-                      { label: 'Phone', value: profile?.phone || 'Not provided' },
-                      { label: 'Role', value: 'Donor' },
-                      { label: 'Blood Type', value: donorProfile?.blood_type || 'Not set' },
-                      { label: 'Availability', value: donorProfile?.is_available ? '✅ Available' : '❌ Unavailable' },
+                      { label: "Full Name", value: profile?.name },
+                      { label: "Email", value: profile?.email },
+                      {
+                        label: "Phone",
+                        value: profile?.phone || "Not provided",
+                      },
+                      { label: "Role", value: "Donor" },
+                      {
+                        label: "Blood Type",
+                        value: donorProfile?.blood_type || "Not set",
+                      },
+                      {
+                        label: "Availability",
+                        value: donorProfile?.is_available
+                          ? "✅ Available"
+                          : "❌ Unavailable",
+                      },
                     ].map((f, i) => (
                       <div key={i} className="profile-field">
                         <div className="profile-field-label">{f.label}</div>
@@ -494,12 +762,11 @@ const DonorDashboard = () => {
                 </div>
               </div>
             )}
-
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default DonorDashboard
+export default DonorDashboard;
