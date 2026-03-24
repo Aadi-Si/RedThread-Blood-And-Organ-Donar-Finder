@@ -167,8 +167,6 @@ const HospitalDashboard = () => {
     { id: "profile", icon: "🏥", label: "Hospital Profile" },
   ];
 
-
-
   useEffect(() => {
     const loadAllData = async () => {
       setLoading(true);
@@ -176,16 +174,16 @@ const HospitalDashboard = () => {
         await Promise.all([fetchProfile(), fetchRequests()]);
       } catch (error) {
         console.error("Error loading dashboard data:", error);
-      }finally{
+      } finally {
         setLoading(false);
       }
-    }
-    loadAllData()
+    };
+    loadAllData();
     const interval = setInterval(fetchRequests, 10000);
     return () => clearInterval(interval);
   }, []);
 
-   if (loading) return <AuthLoader status="Loading your dashboard..." />;
+  if (loading) return <AuthLoader status="Loading your dashboard..." />;
 
   return (
     <div
@@ -394,7 +392,7 @@ const HospitalDashboard = () => {
         </div>
         <div className="sb-footer">
           <button className="logout-btn" onClick={handleLogout}>
-            🚪 Logout
+            Logout
           </button>
         </div>
       </div>
@@ -432,7 +430,7 @@ const HospitalDashboard = () => {
               </div>
             </div>
             <button className="logout-btn" onClick={handleLogout}>
-              🚪 Logout
+              Logout
             </button>
           </div>
         </div>

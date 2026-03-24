@@ -396,7 +396,7 @@ const DonorDashboard = () => {
         </div>
         <div className="sidebar-footer">
           <button className="logout-btn" onClick={handleLogout}>
-            🚪 Logout
+            Logout
           </button>
         </div>
       </div>
@@ -434,7 +434,7 @@ const DonorDashboard = () => {
               </div>
             </div>
             <button className="logout-btn" onClick={handleLogout}>
-              🚪 Logout
+              Logout
             </button>
           </div>
         </div>
@@ -517,12 +517,13 @@ const DonorDashboard = () => {
                       You'll see urgent blood requests here when hospitals near
                       you post them.
                     </div>
-                    {donorProfile && (!donorProfile.blood_type || !donorProfile.latitude) && (
-                      <div className="empty-warning">
-                        ⚠️ Complete your donor settings to start seeing
-                        requests!
-                      </div>
-                    )}
+                    {donorProfile &&
+                      (!donorProfile.blood_type || !donorProfile.latitude) && (
+                        <div className="empty-warning">
+                          ⚠️ Complete your donor settings to start seeing
+                          requests!
+                        </div>
+                      )}
                   </div>
                 </div>
               ) : (
