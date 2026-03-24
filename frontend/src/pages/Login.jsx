@@ -191,9 +191,6 @@ const Login = () => {
           <div className="form-header">
             <div style={{ fontSize: 28, marginBottom: 12 }}>👋</div>
             <div className="form-title">Welcome back</div>
-            <div className="form-sub">
-              Don't have an account? <Link to="/register">Register here</Link>
-            </div>
           </div>
 
           {error && (

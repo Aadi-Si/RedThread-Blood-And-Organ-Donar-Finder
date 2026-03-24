@@ -171,9 +171,6 @@ const Register = () => {
           <div className="form-header">
             <div style={{ fontSize: 26, marginBottom: 10 }}>{isDonor ? '🩸' : '🏥'}</div>
             <div className="form-title">Create your account</div>
-            <div className="form-sub">
-              Already have an account? <Link to="/login">Login here</Link>
-            </div>
           </div>
 
           {/* Role Toggle */}
