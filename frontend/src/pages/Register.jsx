@@ -1,40 +1,57 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const Register = () => {
-  const navigate = useNavigate()
-  const [formData, setFormData] = useState({ name: '', email: '', password: '', phone: '', role: 'donor' })
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [step, setStep] = useState(1)
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    phone: "",
+    role: "donor",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [step, setStep] = useState(1);
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value })
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleRegister = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+    e.preventDefault();
+    setLoading(true);
+    setError("");
     try {
-      const response = await fetch('http://localhost:3000/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      })
-      const data = await response.json()
-      if (!response.ok) { setError(data.error); return }
-      navigate('/login')
+      const response = await fetch("http://localhost:3000/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setError(data.error);
+        return;
+      }
+      navigate("/login");
     } catch (err) {
-      setError('Something went wrong. Please try again.')
+      setError("Something went wrong. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const isDonor = formData.role === 'donor'
+  const isDonor = formData.role === "donor";
 
   return (
-    <div style={{ minHeight: '100svh', display: 'flex', fontFamily: "'Inter', sans-serif", overflow: 'hidden' }}>
+    <div
+      style={{
+        minHeight: "100svh",
+        display: "flex",
+        fontFamily: "'Inter', sans-serif",
+        overflow: "hidden",
+      }}
+    >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -136,29 +153,59 @@ const Register = () => {
         <div className="left-content">
           <div className="left-logo">RedThread 🩸</div>
           <h2 className="left-title">
-            {isDonor ? 'Become a lifesaver today.' : 'Connect with donors instantly.'}
+            {isDonor
+              ? "Become a lifesaver today."
+              : "Connect with donors instantly."}
           </h2>
           <p className="left-sub">
             {isDonor
-              ? 'Register as a donor and get notified when nearby hospitals need your blood type urgently.'
-              : 'Register your hospital and find matching blood donors within minutes of posting a request.'}
+              ? "Register as a donor and get notified when nearby hospitals need your blood type urgently."
+              : "Register your hospital and find matching blood donors within minutes of posting a request."}
           </p>
           <div className="role-preview">
-            <div className="role-preview-label">{isDonor ? 'Donor Benefits' : 'Hospital Benefits'}</div>
-            <div className="role-preview-title">{isDonor ? 'For Donors 🙋' : 'For Hospitals 🏥'}</div>
+            <div className="role-preview-label">
+              {isDonor ? "Donor Benefits" : "Hospital Benefits"}
+            </div>
+            <div className="role-preview-title">
+              {isDonor ? "For Donors 🙋" : "For Hospitals 🏥"}
+            </div>
             {isDonor ? (
               <>
-                <div className="role-feature"><span className="role-feat-icon">🔔</span>Get notified instantly when nearby hospitals need you</div>
-                <div className="role-feature"><span className="role-feat-icon">📍</span>Set your location and blood type once</div>
-                <div className="role-feature"><span className="role-feat-icon">✅</span>Accept or decline requests from your dashboard</div>
-                <div className="role-feature"><span className="role-feat-icon">📊</span>Track your full donation history</div>
+                <div className="role-feature">
+                  <span className="role-feat-icon">🔔</span>Get notified
+                  instantly when nearby hospitals need you
+                </div>
+                <div className="role-feature">
+                  <span className="role-feat-icon">📍</span>Set your location
+                  and blood type once
+                </div>
+                <div className="role-feature">
+                  <span className="role-feat-icon">✅</span>Accept or decline
+                  requests from your dashboard
+                </div>
+                <div className="role-feature">
+                  <span className="role-feat-icon">📊</span>Track your full
+                  donation history
+                </div>
               </>
             ) : (
               <>
-                <div className="role-feature"><span className="role-feat-icon">⚡</span>Post urgent requests in under 30 seconds</div>
-                <div className="role-feature"><span className="role-feat-icon">📍</span>Auto-match donors within 10km radius</div>
-                <div className="role-feature"><span className="role-feat-icon">📧</span>Donors notified via email instantly</div>
-                <div className="role-feature"><span className="role-feat-icon">🗂️</span>Manage all requests from one dashboard</div>
+                <div className="role-feature">
+                  <span className="role-feat-icon">⚡</span>Post urgent requests
+                  in under 30 seconds
+                </div>
+                <div className="role-feature">
+                  <span className="role-feat-icon">📍</span>Auto-match donors
+                  within 10km radius
+                </div>
+                <div className="role-feature">
+                  <span className="role-feat-icon">📧</span>Donors notified via
+                  email instantly
+                </div>
+                <div className="role-feature">
+                  <span className="role-feat-icon">🗂️</span>Manage all requests
+                  from one dashboard
+                </div>
               </>
             )}
           </div>
@@ -169,7 +216,9 @@ const Register = () => {
       <div className="reg-right">
         <div className="reg-form-wrap">
           <div className="form-header">
-            <div style={{ fontSize: 26, marginBottom: 10 }}>{isDonor ? '🩸' : '🏥'}</div>
+            <div style={{ fontSize: 26, marginBottom: 10 }}>
+              {isDonor ? "👋" : "🏥"}
+            </div>
             <div className="form-title">Create your account</div>
           </div>
 
@@ -177,17 +226,17 @@ const Register = () => {
           <div className="role-toggle">
             <button
               type="button"
-              className={`role-btn ${formData.role === 'donor' ? 'active' : 'inactive'}`}
-              onClick={() => setFormData({ ...formData, role: 'donor' })}
+              className={`role-btn ${formData.role === "donor" ? "active" : "inactive"}`}
+              onClick={() => setFormData({ ...formData, role: "donor" })}
             >
-              🩸 I'm a Donor
+              I'm a Donor
             </button>
             <button
               type="button"
-              className={`role-btn ${formData.role === 'hospital' ? 'active' : 'inactive'}`}
-              onClick={() => setFormData({ ...formData, role: 'hospital' })}
+              className={`role-btn ${formData.role === "hospital" ? "active" : "inactive"}`}
+              onClick={() => setFormData({ ...formData, role: "hospital" })}
             >
-              🏥 I'm a Hospital
+              I'm a Hospital
             </button>
           </div>
 
@@ -201,7 +250,9 @@ const Register = () => {
             {/* Name + Phone row */}
             <div className="form-row">
               <div className="form-group no-mb">
-                <label className="form-label">{isDonor ? 'Full Name' : 'Hospital Name'}</label>
+                <label className="form-label">
+                  {isDonor ? "Full Name" : "Hospital Name"}
+                </label>
                 <input
                   type="text"
                   name="name"
@@ -209,7 +260,7 @@ const Register = () => {
                   onChange={handleChange}
                   required
                   className="form-input"
-                  placeholder={isDonor ? 'John Doe' : 'Apollo Hospital'}
+                  placeholder={isDonor ? "John Doe" : "Apollo Hospital"}
                 />
               </div>
               <div className="form-group no-mb">
@@ -243,26 +294,60 @@ const Register = () => {
               <label className="form-label">Password</label>
               <div className="input-wrap">
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   required
                   className="form-input"
-                  placeholder="Min. 8 characters"
+                  placeholder="Min. 6 characters"
                   style={{ paddingRight: 40 }}
                 />
-                <button type="button" className="input-eye" onClick={() => setShowPassword(!showPassword)}>
-                  {showPassword ? '🙈' : '👁️'}
+                <button
+                  type="button"
+                  className="input-eye"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    // Eye OFF (hidden password)
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M17.94 17.94A10.94 10.94 0 0 1 12 19C7 19 2.73 15.11 1 12c.73-1.28 1.67-2.42 2.77-3.36M9.88 9.88A3 3 0 0 0 12 15a3 3 0 0 0 2.12-.88M1 1l22 22" />
+                    </svg>
+                  ) : (
+                    // Eye ON (show password)
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  )}
                 </button>
               </div>
             </div>
 
             <button type="submit" className="btn-register" disabled={loading}>
-              {loading
-                ? <><div className="spinner" /> Creating account...</>
-                : `→ Create ${isDonor ? 'Donor' : 'Hospital'} Account`
-              }
+              {loading ? (
+                <>
+                  <div className="spinner" /> Creating account...
+                </>
+              ) : (
+                `→ Create ${isDonor ? "Donor" : "Hospital"} Account`
+              )}
             </button>
           </form>
 
@@ -271,12 +356,13 @@ const Register = () => {
           </div>
 
           <div className="terms">
-            By registering, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+            By registering, you agree to our <a href="#">Terms of Service</a>{" "}
+            and <a href="#">Privacy Policy</a>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;
