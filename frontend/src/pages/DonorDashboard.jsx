@@ -208,7 +208,7 @@ const DonorDashboard = () => {
   const navItems = [
     {
       id: "requests",
-      icon: "🩸",
+      icon: "🚑",
       label: "Blood Requests",
       count: requests.length,
     },
@@ -373,7 +373,7 @@ const DonorDashboard = () => {
       {/* Mobile drawer */}
       <div className={`drawer ${sidebarOpen ? "open" : ""}`}>
         <div className="sidebar-logo" style={{ padding: "20px 16px" }}>
-          <div className="sidebar-logo-text">RedThread 🩸</div>
+          <div className="sidebar-logo-text">RedThread</div>
           <div className="sidebar-logo-sub">Donor Dashboard</div>
         </div>
         <div className="sidebar-nav">
@@ -405,7 +405,7 @@ const DonorDashboard = () => {
         {/* Desktop Sidebar */}
         <div className="sidebar">
           <div className="sidebar-logo">
-            <div className="sidebar-logo-text">RedThread 🩸</div>
+            <div className="sidebar-logo-text">RedThread</div>
             <div className="sidebar-logo-sub">Donor Dashboard</div>
           </div>
           <div className="sidebar-nav">
@@ -443,7 +443,7 @@ const DonorDashboard = () => {
         <div className="main-content">
           {/* Mobile topbar */}
           <div className="topbar">
-            <div className="topbar-logo">RedThread 🩸</div>
+            <div className="topbar-logo">RedThread</div>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <span style={{ fontSize: 13, color: "#888" }}>
                 Hi, {profile?.name?.split(" ")[0]} 👋
@@ -509,7 +509,7 @@ const DonorDashboard = () => {
               (requests.length === 0 ? (
                 <div className="card">
                   <div className="empty-state">
-                    <div className="empty-icon">🩸</div>
+                    <div className="empty-icon">🚑</div>
                     <div className="empty-title">
                       No active requests right now
                     </div>
@@ -730,7 +730,7 @@ const DonorDashboard = () => {
                           marginTop: 3,
                         }}
                       >
-                        🩸 Blood Donor · {donorProfile?.blood_type || "Not set"}
+                        Blood Donor · {donorProfile?.blood_type || "Not set"}
                       </div>
                     </div>
                   </div>

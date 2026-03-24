@@ -369,7 +369,7 @@ const HospitalDashboard = () => {
       />
       <div className={`drawer ${sidebarOpen ? "open" : ""}`}>
         <div className="sb-logo" style={{ padding: "20px 16px" }}>
-          <div className="sb-logo-text">RedThread 🩸</div>
+          <div className="sb-logo-text">RedThread</div>
           <div className="sb-logo-sub">Hospital Dashboard</div>
         </div>
         <div className="sb-nav">
@@ -401,7 +401,7 @@ const HospitalDashboard = () => {
         {/* Desktop Sidebar */}
         <div className="sidebar">
           <div className="sb-logo">
-            <div className="sb-logo-text">RedThread 🩸</div>
+            <div className="sb-logo-text">RedThread</div>
             <div className="sb-logo-sub">Hospital Dashboard</div>
           </div>
           <div className="sb-nav">
@@ -439,7 +439,7 @@ const HospitalDashboard = () => {
         <div className="main">
           {/* Mobile topbar */}
           <div className="topbar">
-            <div className="topbar-logo">RedThread 🩸</div>
+            <div className="topbar-logo">RedThread</div>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <span style={{ fontSize: 13, color: "#888" }}>
                 Hi, {profile?.name?.split(" ")[0]} 👋
@@ -780,7 +780,7 @@ const HospitalDashboard = () => {
                             <div className="spinner" /> Posting & Notifying...
                           </>
                         ) : (
-                          "🚨 Post Request & Notify Donors"
+                          "Post Request & Notify Donors"
                         )}
                       </button>
                     </div>
@@ -800,7 +800,7 @@ const HospitalDashboard = () => {
                     <div>
                       <div className="profile-hero-name">{profile?.name}</div>
                       <div className="profile-hero-sub">
-                        🏥 Verified Hospital · RedThread Partner
+                        Verified Hospital · RedThread Partner
                       </div>
                     </div>
                   </div>
@@ -822,7 +822,7 @@ const HospitalDashboard = () => {
                       color: "#111",
                     }}
                   >
-                    📋 Hospital Information
+                    Hospital Information
                   </div>
                   <div style={{ padding: "clamp(14px,2vw,20px)" }}>
                     <div className="profile-grid">

@@ -156,7 +156,7 @@ const Login = () => {
         <div className="login-left-glow" />
         <div className="login-left-glow-2" />
         <div className="left-content">
-          <div className="left-logo">RedThread 🩸</div>
+          <div className="left-logo">RedThread</div>
           <h2 className="left-title">Every second saves a life.</h2>
           <p className="left-sub">Join thousands of donors and hospitals using RedThread to connect in real time — based on blood type, location, and urgency.</p>
           <div className="left-cards">
@@ -189,7 +189,6 @@ const Login = () => {
       <div className="login-right">
         <div className="login-form-wrap">
           <div className="form-header">
-            <div style={{ fontSize: 28, marginBottom: 12 }}>👋</div>
             <div className="form-title">Welcome back</div>
           </div>
 
@@ -229,7 +228,40 @@ const Login = () => {
                   style={{ paddingRight: 44 }}
                 />
                 <button type="button" className="input-icon" onClick={() => setShowPassword(!showPassword)}>
-                  {showPassword ? '🙈' : '👁️'}
+                                  <button
+                  type="button"
+                  className="input-eye"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    // Eye OFF (hidden password)
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M17.94 17.94A10.94 10.94 0 0 1 12 19C7 19 2.73 15.11 1 12c.73-1.28 1.67-2.42 2.77-3.36M9.88 9.88A3 3 0 0 0 12 15a3 3 0 0 0 2.12-.88M1 1l22 22" />
+                    </svg>
+                  ) : (
+                    // Eye ON (show password)
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  )}
+                </button>
                 </button>
               </div>
             </div>

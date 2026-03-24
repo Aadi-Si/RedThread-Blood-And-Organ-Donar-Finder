@@ -151,7 +151,7 @@ const Register = () => {
         <div className="reg-left-glow" />
         <div className="reg-left-glow2" />
         <div className="left-content">
-          <div className="left-logo">RedThread 🩸</div>
+          <div className="left-logo">RedThread</div>
           <h2 className="left-title">
             {isDonor
               ? "Become a lifesaver today."
@@ -216,9 +216,6 @@ const Register = () => {
       <div className="reg-right">
         <div className="reg-form-wrap">
           <div className="form-header">
-            <div style={{ fontSize: 26, marginBottom: 10 }}>
-              {isDonor ? "👋" : "🏥"}
-            </div>
             <div className="form-title">Create your account</div>
           </div>
 

@@ -109,7 +109,7 @@ const Landing = () => {
     { num: '01', title: 'Register', desc: 'Sign up as a donor or hospital. Takes under 2 minutes.', icon: '📋', color: '#B91C1C' },
     { num: '02', title: 'Set Profile', desc: 'Donors set blood type, location, and availability status.', icon: '📍', color: '#991B1B' },
     { num: '03', title: 'Get Matched', desc: 'Hospitals post requests. Nearby donors get notified instantly.', icon: '🔔', color: '#7F1D1D' },
-    { num: '04', title: 'Save a Life', desc: 'Donor accepts, heads to hospital. A life is saved.', icon: '🩸', color: '#450A0A' },
+    { num: '04', title: 'Save a Life', desc: 'Donor accepts, heads to hospital. A life is saved.', icon: '➕', color: '#450A0A' },
   ]
 
   const testimonials = [
@@ -314,7 +314,7 @@ const Landing = () => {
       {/* ─── Preloader ─── */}
       <div className={`fixed inset-0 z-[9999] bg-[#B91C1C] flex items-center justify-center transition-all duration-700 ${loaded ? 'opacity-0 invisible pointer-events-none' : 'opacity-100 visible'}`}>
         <div className="text-[clamp(24px,5vw,32px)] font-black text-white tracking-tight anim-preloader-pulse">
-          RedThread 🩸
+          RedThread
         </div>
       </div>
 
@@ -334,7 +334,7 @@ const Landing = () => {
           className="text-[clamp(16px,2vw,20px)] font-black text-[#B91C1C] tracking-tight cursor-pointer whitespace-nowrap"
           onClick={() => window.scrollTo(0, 0)}
         >
-          RedThread 🩸
+          RedThread
         </div>
 
         <div className="nav-links flex gap-[clamp(16px,3vw,40px)] items-center">
@@ -415,10 +415,9 @@ const Landing = () => {
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="inline-flex items-center gap-2 bg-[rgba(185,28,28,0.08)] border border-[rgba(185,28,28,0.2)] text-[#B91C1C] px-4 py-2 rounded-full text-[clamp(11px,1.5vw,13px)] font-semibold mb-[clamp(16px,3vh,28px)] max-w-full hero-badge-anim">
-            <span className="anim-heartbeat flex-shrink-0">🩸</span>
-            <span className="badge-text-span">Connecting Lives in Real Time</span>
-          </div>
+ <div className="inline-flex items-center gap-2 bg-[rgba(185,28,28,0.08)] border border-[rgba(185,28,28,0.2)] text-[#B91C1C] px-4 py-2 rounded-full text-[clamp(11px,1.5vw,13px)] font-semibold mb-[clamp(16px,3vh,28px)] max-w-full">
+  <span className="badge-text-span">Connecting Lives in Real Time</span>
+</div>
 
           <h1 className="text-[clamp(36px,5.5vw,80px)] font-black leading-[1.05] tracking-[-2px] mb-[clamp(14px,2.5vh,24px)] hero-title-anim">
             Connecting Lives,<br />
@@ -434,7 +433,7 @@ const Landing = () => {
               className="bg-[#B91C1C] text-white border-none px-[clamp(24px,3vw,40px)] py-[clamp(12px,2vh,16px)] rounded-full text-[clamp(14px,1.8vw,16px)] font-bold cursor-pointer font-[inherit] transition-all duration-300 shadow-[0_8px_30px_rgba(185,28,28,0.35)] flex items-center gap-2 whitespace-nowrap hover:bg-[#991B1B] hover:-translate-y-[3px] hover:shadow-[0_16px_40px_rgba(185,28,28,0.45)]"
               onClick={() => navigate('/register')}
             >
-              🩸 Find Donors
+              Find Donors
             </button>
             <button
               className="bg-white text-[#B91C1C] border-2 border-[rgba(185,28,28,0.2)] px-[clamp(24px,3vw,40px)] py-[clamp(12px,2vh,16px)] rounded-full text-[clamp(14px,1.8vw,16px)] font-semibold cursor-pointer font-[inherit] transition-all duration-300 whitespace-nowrap hover:border-[#B91C1C] hover:-translate-y-[3px] hover:shadow-[0_8px_20px_rgba(185,28,28,0.15)]"
@@ -599,7 +598,7 @@ const Landing = () => {
                   {activeStep === 0 && (
                     <div className="phone-content-anim">
                       <div className="flex justify-between items-center mb-[clamp(12px,2vh,20px)]">
-                        <div className="text-[clamp(11px,1.3vw,14px)] font-black text-[#B91C1C]">RedThread 🩸</div>
+                        <div className="text-[clamp(11px,1.3vw,14px)] font-black text-[#B91C1C]">RedThread</div>
                         <div className="text-[clamp(9px,1vw,11px)] text-[#16a34a] font-semibold bg-[#dcfce7] px-2 py-[3px] rounded-full">● Live</div>
                       </div>
                       <div className="text-base font-extrabold mb-[14px] text-[#111]">Create Account</div>
@@ -616,7 +615,7 @@ const Landing = () => {
                   {activeStep === 1 && (
                     <div className="phone-content-anim">
                       <div className="flex justify-between items-center mb-[14px]">
-                        <div className="text-[clamp(11px,1.3vw,14px)] font-black text-[#B91C1C]">RedThread 🩸</div>
+                        <div className="text-[clamp(11px,1.3vw,14px)] font-black text-[#B91C1C]">RedThread</div>
                         <div className="text-[clamp(9px,1vw,11px)] text-[#16a34a] font-semibold bg-[#dcfce7] px-2 py-[3px] rounded-full">✓ Done</div>
                       </div>
                       <div className="text-[15px] font-extrabold mb-[14px] text-[#111]">Set Your Profile</div>
@@ -633,7 +632,7 @@ const Landing = () => {
                   {activeStep === 2 && (
                     <div className="phone-content-anim">
                       <div className="flex justify-between items-center mb-[clamp(12px,2vh,20px)]">
-                        <div className="text-[clamp(11px,1.3vw,14px)] font-black text-[#B91C1C]">RedThread 🩸</div>
+                        <div className="text-[clamp(11px,1.3vw,14px)] font-black text-[#B91C1C]">RedThread</div>
                         <div className="text-[clamp(9px,1vw,11px)] text-[#16a34a] font-semibold bg-[#dcfce7] px-2 py-[3px] rounded-full">● Active</div>
                       </div>
                       <div className="bg-[#fef2f2] border-[1.5px] border-[#fecaca] rounded-[14px] p-[14px] mb-3">
@@ -651,9 +650,9 @@ const Landing = () => {
                   {activeStep === 3 && (
                     <div className="phone-content-anim text-center pt-4">
                       <div className="flex justify-between items-center mb-[clamp(12px,2vh,20px)]">
-                        <div className="text-[clamp(11px,1.3vw,14px)] font-black text-[#B91C1C]">RedThread 🩸</div>
+                        <div className="text-[clamp(11px,1.3vw,14px)] font-black text-[#B91C1C]">RedThread</div>
                       </div>
-                      <div className="text-[52px] mb-[10px] anim-heartbeat-slow">🩸</div>
+                      <div className="text-[52px] mb-[10px] anim-heartbeat-slow">🔥</div>
                       <div className="text-[18px] font-black text-[#111] mb-[6px]">You're a Hero!</div>
                       <div className="text-[12px] text-[#666] leading-[1.6]">Head to Apollo Hospital now.</div>
                       <div className="bg-[#f0fdf4] border border-[#bbf7d0] rounded-[12px] p-[10px] mt-[14px] text-[12px] text-[#16a34a] font-semibold">✅ Hospital notified</div>
@@ -826,7 +825,7 @@ const Landing = () => {
             className="bg-[#B91C1C] text-white border-none px-[clamp(24px,3vw,40px)] py-[clamp(12px,2vh,16px)] rounded-full text-[clamp(14px,1.8vw,16px)] font-bold cursor-pointer font-[inherit] transition-all duration-300 shadow-[0_8px_30px_rgba(185,28,28,0.35)] flex items-center gap-2 hover:bg-[#991B1B] hover:-translate-y-[3px] hover:shadow-[0_16px_40px_rgba(185,28,28,0.45)]"
             onClick={() => navigate('/register')}
           >
-            🩸 Become a Donor
+            Become a Donor
           </button>
           <button
             className="bg-white text-[#B91C1C] border-2 border-[rgba(185,28,28,0.2)] px-[clamp(24px,3vw,40px)] py-[clamp(12px,2vh,16px)] rounded-full text-[clamp(14px,1.8vw,16px)] font-semibold cursor-pointer font-[inherit] transition-all duration-300 hover:border-[#B91C1C] hover:-translate-y-[3px] hover:shadow-[0_8px_20px_rgba(185,28,28,0.15)]"
@@ -846,7 +845,7 @@ const Landing = () => {
       <footer className="bg-[#111] text-white py-[clamp(40px,6vh,60px)] px-[clamp(16px,4vw,64px)] pb-[clamp(24px,4vh,40px)]">
         <div className="flex justify-between mb-[clamp(32px,5vh,48px)] gap-8 flex-wrap">
           <div>
-            <div className="text-[clamp(18px,2vw,22px)] font-black text-[#ef4444] tracking-tight">RedThread 🩸</div>
+            <div className="text-[clamp(18px,2vw,22px)] font-black text-[#ef4444] tracking-tight">RedThread</div>
             <div className="text-[clamp(12px,1.3vw,14px)] text-[#666] mt-2">Connecting lives, one drop at a time.</div>
           </div>
           <div className="flex gap-[clamp(32px,5vw,60px)] flex-wrap">
@@ -866,7 +865,6 @@ const Landing = () => {
         </div>
         <div className="border-t border-[#222] pt-[clamp(16px,3vh,32px)] flex justify-between items-center flex-wrap gap-3">
           <div className="text-[clamp(11px,1.2vw,13px)] text-[#555]">© 2026 RedThread. All rights reserved.</div>
-          <div className="text-[clamp(11px,1.2vw,13px)] text-[#555]">Made with <span className="text-[#ef4444]">❤️</span> to save lives</div>
         </div>
       </footer>
     </div>
