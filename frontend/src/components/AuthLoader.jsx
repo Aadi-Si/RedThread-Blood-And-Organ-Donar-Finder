@@ -2,7 +2,6 @@ const AuthLoader = ({ status = "Please wait..." }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#fafafa] font-[Inter]">
       <div className="text-center animate-[fadeUp_0.6s_ease_forwards] px-6">
-        <div className="text-4xl mb-2 animate-pulse">🩸</div>
         <div className="text-[22px] font-black text-[#B91C1C] tracking-tight mb-8">
           RedThread
         </div>
