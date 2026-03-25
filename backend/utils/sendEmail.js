@@ -1,21 +1,20 @@
-const SibApiV3Sdk = require('@getbrevo/brevo');
+const Brevo = require("@getbrevo/brevo");
 
-// Setup API client
-const client = SibApiV3Sdk.ApiClient.instance;
-const apiKey = client.authentications['api-key'];
-apiKey.apiKey = process.env.BREVO_API_KEY;
+const apiInstance = new Brevo.TransactionalEmailsApi();
 
-// Create email API instance
-const tranEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
+apiInstance.setApiKey(
+  Brevo.TransactionalEmailsApiApiKeys.apiKey,
+  process.env.BREVO_API_KEY
+);
 
 async function sendEmail(to, subject, html) {
   console.log("📧 sendEmail called with:", to);
 
   try {
-    const response = await tranEmailApi.sendTransacEmail({
+    const response = await apiInstance.sendTransacEmail({
       sender: {
-        email: "voidadityasingh@gmail.com",
-        name: "redthread"
+        email: "voidadityasingh@gmail.com", // MUST be verified
+        name: "RedThread",
       },
       to: [{ email: to }],
       subject: subject,
