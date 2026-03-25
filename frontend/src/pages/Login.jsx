@@ -42,7 +42,7 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: 'http://localhost:5173/auth/callback' }
+      options: { redirectTo: 'https://redthread-blood-and-organ-donar-finder-mgb4.onrender.com/auth/callback' }
     })
   }
 
