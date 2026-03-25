@@ -1,3 +1,9 @@
+const express = require("express");
+const router = express.Router();
+const supabase = require("../config/supabase");
+const protect = require("../middleware/auth");
+const sendEmail = require("../utils/sendEmail");
+
 // ACCEPT A REQUEST
 router.post("/request/:requestId/accept", protect, async (req, res) => {
   try {
@@ -69,6 +75,7 @@ router.post("/request/:requestId/accept", protect, async (req, res) => {
   }
 });
 
+module.exports = router;
 // correct working code
 
 // const express = require("express");
