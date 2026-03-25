@@ -51,7 +51,7 @@ router.post('/request', protect, async (req, res) => {
       donor.latitude,
       donor.longitude
     )
-    return distance <= 20
+    return distance <= 7
   })
 
   // ✅ SEND RESPONSE FIRST (ONLY CHANGE)
