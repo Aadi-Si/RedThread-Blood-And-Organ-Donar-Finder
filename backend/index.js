@@ -4,7 +4,7 @@ const cors = require('cors')
 const app = express();
 
 const allowedOrigins = [
-    "https://redthread-blood-and-organ-donar-finder-mgb4.onrender.com",
+    "https://red-thread-blood-and-organ-donar-fi.vercel.app/",
     "http://localhost:5173"
 ];
 
