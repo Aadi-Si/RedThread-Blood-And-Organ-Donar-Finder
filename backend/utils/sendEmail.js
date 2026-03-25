@@ -1,20 +1,31 @@
-const { Resend } = require("resend");
+const SibApiV3Sdk = require('@getbrevo/brevo');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Setup API client
+const client = SibApiV3Sdk.ApiClient.instance;
+const apiKey = client.authentications['api-key'];
+apiKey.apiKey = process.env.BREVO_API_KEY;
+
+// Create email API instance
+const tranEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
 
 async function sendEmail(to, subject, html) {
   console.log("📧 sendEmail called with:", to);
+
   try {
-    await resend.emails.send({
-      from: "RedThread <onboarding@resend.dev>", // default working sender
-      to,
-      subject,
-      html,
+    const response = await tranEmailApi.sendTransacEmail({
+      sender: {
+        email: "voidadityasingh@gmail.com",
+        name: "redthread"
+      },
+      to: [{ email: to }],
+      subject: subject,
+      htmlContent: html,
     });
-    console.log("✅ Email sent");
+
+    console.log("✅ Email sent:", response);
     return true;
   } catch (err) {
-    console.error("Email failed:", err);
+    console.error("❌ Email failed:", err.response?.body || err);
     return false;
   }
 }
