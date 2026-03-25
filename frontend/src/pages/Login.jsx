@@ -16,7 +16,7 @@ const Login = () => {
     setLoading(true)
     setError('')
     try {
-      const response = await fetch('http://localhost:3000/auth/login', {
+      const response = await fetch('https://redthread-blood-and-organ-donar-finder.onrender.com/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -25,7 +25,7 @@ const Login = () => {
       if (!response.ok) { setError(data.error); return }
       const token = data.session.access_token
       localStorage.setItem('token', token)
-      const profileResponse = await fetch('http://localhost:3000/auth/profile', {
+      const profileResponse = await fetch('https://redthread-blood-and-organ-donar-finder.onrender.com/auth/profile', {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       const profileData = await profileResponse.json()

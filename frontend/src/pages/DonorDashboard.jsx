@@ -50,7 +50,7 @@ const DonorDashboard = () => {
 
   const fetchProfile = async () => {
     try {
-      const res = await fetch("http://localhost:3000/auth/profile", {
+      const res = await fetch("https://redthread-blood-and-organ-donar-finder.onrender.com/auth/profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -60,7 +60,7 @@ const DonorDashboard = () => {
 
   const fetchDonorProfile = async () => {
     try {
-      const res = await fetch("http://localhost:3000/donor/profile", {
+      const res = await fetch("https://redthread-blood-and-organ-donar-finder.onrender.com/donor/profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -76,7 +76,7 @@ const DonorDashboard = () => {
 
   const fetchRequests = async () => {
     try {
-      const res = await fetch("http://localhost:3000/donor/requests", {
+      const res = await fetch("https://redthread-blood-and-organ-donar-finder.onrender.com/donor/requests", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -86,7 +86,7 @@ const DonorDashboard = () => {
 
   const fetchRespondedRequests = async () => {
     try {
-      const res = await fetch("http://localhost:3000/donor/history", {
+      const res = await fetch("https://redthread-blood-and-organ-donar-finder.onrender.com/donor/history", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -98,7 +98,7 @@ const DonorDashboard = () => {
     e.preventDefault();
     setUpdatingProfile(true);
     try {
-      const res = await fetch("http://localhost:3000/donor/profile", {
+      const res = await fetch("https://redthread-blood-and-organ-donar-finder.onrender.com/donor/profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -138,7 +138,7 @@ const DonorDashboard = () => {
   const handleAccept = async (requestId) => {
     try {
       const res = await fetch(
-        `http://localhost:3000/donor/request/${requestId}/accept`,
+        `https://redthread-blood-and-organ-donar-finder.onrender.com/donor/request/${requestId}/accept`,
         { method: "POST", headers: { Authorization: `Bearer ${token}` } },
       );
       const data = await res.json();
@@ -155,7 +155,7 @@ const DonorDashboard = () => {
   const handleReject = async (requestId) => {
     try {
       const res = await fetch(
-        `http://localhost:3000/donor/request/${requestId}/reject`,
+        `https://redthread-blood-and-organ-donar-finder.onrender.com/donor/request/${requestId}/reject`,
         { method: "POST", headers: { Authorization: `Bearer ${token}` } },
       );
       const data = await res.json();

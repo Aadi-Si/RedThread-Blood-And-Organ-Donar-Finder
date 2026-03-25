@@ -22,7 +22,7 @@ const AuthCallback = () => {
         localStorage.setItem('token', token)
 
         setStatus('Loading your profile...')
-        const profileResponse = await fetch('http://localhost:3000/auth/profile', {
+        const profileResponse = await fetch('https://redthread-blood-and-organ-donar-finder.onrender.com/auth/profile', {
           headers: { Authorization: `Bearer ${token}` }
         })
 

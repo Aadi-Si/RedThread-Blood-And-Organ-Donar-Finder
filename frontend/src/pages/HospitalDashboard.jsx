@@ -29,7 +29,7 @@ const HospitalDashboard = () => {
 
   const fetchProfile = async () => {
     try {
-      const res = await fetch("http://localhost:3000/auth/profile", {
+      const res = await fetch("https://redthread-blood-and-organ-donar-finder.onrender.com/auth/profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -39,7 +39,7 @@ const HospitalDashboard = () => {
 
   const fetchRequests = async () => {
     try {
-      const res = await fetch("http://localhost:3000/hospital/history", {
+      const res = await fetch("https://redthread-blood-and-organ-donar-finder.onrender.com/hospital/history", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -65,7 +65,7 @@ const HospitalDashboard = () => {
     e.preventDefault();
     setPosting(true);
     try {
-      const res = await fetch("http://localhost:3000/hospital/request", {
+      const res = await fetch("https://redthread-blood-and-organ-donar-finder.onrender.com/hospital/request", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -100,7 +100,7 @@ const HospitalDashboard = () => {
   const handleCloseRequest = async (requestId) => {
     try {
       const res = await fetch(
-        `http://localhost:3000/hospital/request/${requestId}/close`,
+        `https://redthread-blood-and-organ-donar-finder.onrender.com/hospital/request/${requestId}/close`,
         { method: "PUT", headers: { Authorization: `Bearer ${token}` } },
       );
       const data = await res.json();

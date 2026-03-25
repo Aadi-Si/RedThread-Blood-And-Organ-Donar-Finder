@@ -23,7 +23,7 @@ const Register = () => {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch("http://localhost:3000/auth/register", {
+      const response = await fetch("https://redthread-blood-and-organ-donar-finder.onrender.com/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
