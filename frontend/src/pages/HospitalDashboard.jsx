@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthLoader from "../components/AuthLoader";
 
+const API = import.meta.env.VITE_API_URL;
+
 const HospitalDashboard = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
@@ -10,6 +12,7 @@ const HospitalDashboard = () => {
   const [activeTab, setActiveTab] = useState("requests");
   const [showForm, setShowForm] = useState(false);
   const [posting, setPosting] = useState(false);
+  const [postingMsg, setPostingMsg] = useState("Posting & Notifying...");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [toast, setToast] = useState(null);
   const [formData, setFormData] = useState({
@@ -29,7 +32,7 @@ const HospitalDashboard = () => {
 
   const fetchProfile = async () => {
     try {
-      const res = await fetch("https://redthread-blood-and-organ-donar-finder.onrender.com/auth/profile", {
+      const res = await fetch(`${API}/auth/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -39,7 +42,7 @@ const HospitalDashboard = () => {
 
   const fetchRequests = async () => {
     try {
-      const res = await fetch("https://redthread-blood-and-organ-donar-finder.onrender.com/hospital/history", {
+      const res = await fetch(`${API}/hospital/history`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -64,8 +67,14 @@ const HospitalDashboard = () => {
   const handlePostRequest = async (e) => {
     e.preventDefault();
     setPosting(true);
+    setPostingMsg("Posting & Notifying...");
+
+    const slowTimer = setTimeout(() => {
+      setPostingMsg("Server waking up, please wait...");
+    }, 5000);
+
     try {
-      const res = await fetch("https://redthread-blood-and-organ-donar-finder.onrender.com/hospital/request", {
+      const res = await fetch(`${API}/hospital/request`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -73,36 +82,39 @@ const HospitalDashboard = () => {
         },
         body: JSON.stringify(formData),
       });
+      clearTimeout(slowTimer);
       const data = await res.json();
+
       if (!res.ok) {
         showToast(data.error, "error");
-        return;
+      } else {
+        showToast(
+          `🎉 Request posted! ${data.notified_donors} donor${data.notified_donors !== 1 ? "s" : ""} notified.`,
+        );
+        setActiveTab("requests");
+        setFormData({
+          blood_type: "A+",
+          urgency_level: "critical",
+          message: "",
+          latitude: "",
+          longitude: "",
+        });
+        fetchRequests();
       }
-      showToast(
-        `🎉 Request posted! ${data.notified_donors} donor${data.notified_donors !== 1 ? "s" : ""} notified.`,
-      );
-      setShowForm(false);
-      setFormData({
-        blood_type: "A+",
-        urgency_level: "critical",
-        message: "",
-        latitude: "",
-        longitude: "",
-      });
-      fetchRequests();
     } catch (e) {
       showToast("Something went wrong.", "error");
     } finally {
       setPosting(false);
+      clearTimeout(slowTimer);
     }
   };
 
   const handleCloseRequest = async (requestId) => {
     try {
-      const res = await fetch(
-        `https://redthread-blood-and-organ-donar-finder.onrender.com/hospital/request/${requestId}/close`,
-        { method: "PUT", headers: { Authorization: `Bearer ${token}` } },
-      );
+      const res = await fetch(`${API}/hospital/request/${requestId}/close`, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await res.json();
       if (!res.ok) {
         showToast(data.error, "error");
@@ -777,7 +789,7 @@ const HospitalDashboard = () => {
                       >
                         {posting ? (
                           <>
-                            <div className="spinner" /> Posting & Notifying...
+                            <div className="spinner" /> {postingMsg}
                           </>
                         ) : (
                           "Post Request & Notify Donors"

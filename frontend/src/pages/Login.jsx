@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../config/supabase'
+const API = import.meta.env.VITE_API_URL;
 
 const Login = () => {
   const navigate = useNavigate()
@@ -16,18 +17,18 @@ const Login = () => {
     setLoading(true)
     setError('')
     try {
-      const response = await fetch('https://redthread-blood-and-organ-donar-finder.onrender.com/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      })
+      const response = await fetch(`${API}/auth/login`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(formData)
+})
       const data = await response.json()
       if (!response.ok) { setError(data.error); return }
       const token = data.session.access_token
       localStorage.setItem('token', token)
-      const profileResponse = await fetch('https://redthread-blood-and-organ-donar-finder.onrender.com/auth/profile', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
+      const profileResponse = await fetch(`${API}/auth/profile`, {
+  headers: { 'Authorization': `Bearer ${token}` }
+})
       const profileData = await profileResponse.json()
       localStorage.setItem('role', profileData.user.role)
       if (profileData.user.role === 'donor') navigate('/donor/dashboard')

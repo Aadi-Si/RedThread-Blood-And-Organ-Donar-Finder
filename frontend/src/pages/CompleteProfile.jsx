@@ -1,41 +1,61 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+const API = import.meta.env.VITE_API_URL;
 
 const CompleteProfile = () => {
-  const navigate = useNavigate()
-  const [formData, setFormData] = useState({ name: '', phone: '', role: 'donor' })
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const token = localStorage.getItem('token')
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    role: "donor",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const token = localStorage.getItem("token");
 
-  useEffect(() => { if (!token) navigate('/login') }, [])
+  useEffect(() => {
+    if (!token) navigate("/login");
+  }, []);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+    e.preventDefault();
+    setLoading(true);
+    setError("");
     try {
-      const response = await fetch('https://redthread-blood-and-organ-donar-finder.onrender.com/auth/complete-profile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify(formData)
-      })
-      const data = await response.json()
-      if (!response.ok) { setError(data.error); return }
-      localStorage.setItem('role', formData.role)
-      if (formData.role === 'donor') navigate('/donor/dashboard')
-      else navigate('/hospital/dashboard')
+      const response = await fetch(`${API}/auth/complete-profile`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setError(data.error);
+        return;
+      }
+      localStorage.setItem("role", formData.role);
+      if (formData.role === "donor") navigate("/donor/dashboard");
+      else navigate("/hospital/dashboard");
     } catch (err) {
-      setError('Something went wrong. Please try again.')
+      setError("Something went wrong. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const isDonor = formData.role === 'donor'
+  const isDonor = formData.role === "donor";
 
   return (
-    <div style={{ minHeight: '100svh', display: 'flex', fontFamily: "'Inter', sans-serif", overflow: 'hidden' }}>
+    <div
+      style={{
+        minHeight: "100svh",
+        display: "flex",
+        fontFamily: "'Inter', sans-serif",
+        overflow: "hidden",
+      }}
+    >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -119,32 +139,59 @@ const CompleteProfile = () => {
         <div className="left-content">
           <div className="left-logo">RedThread 🩸</div>
           <div className="left-step-label">One last step</div>
-          <h2 className="left-title">{isDonor ? 'Tell us about yourself.' : 'Set up your hospital.'}</h2>
+          <h2 className="left-title">
+            {isDonor ? "Tell us about yourself." : "Set up your hospital."}
+          </h2>
           <p className="left-sub">
             {isDonor
-              ? 'You signed in with Google! Just tell us your name and phone so donors can reach you when needed.'
-              : 'Almost done! Tell us your hospital name and contact so donors can connect with you instantly.'}
+              ? "You signed in with Google! Just tell us your name and phone so donors can reach you when needed."
+              : "Almost done! Tell us your hospital name and contact so donors can connect with you instantly."}
           </p>
           <div className="steps-track">
-            <div className="track-step done" style={{ animation: 'slideInLeft 0.5s ease 0.3s both' }}>
+            <div
+              className="track-step done"
+              style={{ animation: "slideInLeft 0.5s ease 0.3s both" }}
+            >
               <div className="track-num done">✓</div>
               <div className="track-text">
                 <div className="track-title">Sign in with Google</div>
                 <div className="track-sub">Account verified successfully</div>
               </div>
             </div>
-            <div className="track-step done" style={{ animation: 'slideInLeft 0.5s ease 0.5s both' }}>
+            <div
+              className="track-step done"
+              style={{ animation: "slideInLeft 0.5s ease 0.5s both" }}
+            >
               <div className="track-num done">✓</div>
               <div className="track-text">
                 <div className="track-title">Choose your role</div>
-                <div className="track-sub">{isDonor ? 'Donor selected' : 'Hospital selected'}</div>
+                <div className="track-sub">
+                  {isDonor ? "Donor selected" : "Hospital selected"}
+                </div>
               </div>
             </div>
-            <div className="track-step" style={{ animation: 'slideInLeft 0.5s ease 0.7s both', background: 'rgba(255,255,255,0.18)', borderColor: 'rgba(255,255,255,0.35)' }}>
-              <div className="track-num" style={{ background: 'white', color: '#B91C1C' }}>3</div>
+            <div
+              className="track-step"
+              style={{
+                animation: "slideInLeft 0.5s ease 0.7s both",
+                background: "rgba(255,255,255,0.18)",
+                borderColor: "rgba(255,255,255,0.35)",
+              }}
+            >
+              <div
+                className="track-num"
+                style={{ background: "white", color: "#B91C1C" }}
+              >
+                3
+              </div>
               <div className="track-text">
                 <div className="track-title">Complete profile</div>
-                <div className="track-sub" style={{ color: 'rgba(255,255,255,0.8)' }}>Fill in the form →</div>
+                <div
+                  className="track-sub"
+                  style={{ color: "rgba(255,255,255,0.8)" }}
+                >
+                  Fill in the form →
+                </div>
               </div>
             </div>
           </div>
@@ -155,35 +202,52 @@ const CompleteProfile = () => {
       <div className="cp-right">
         <div className="form-wrap">
           <div className="form-header">
-            <div className="form-emoji">{isDonor ? '🙋' : '🏥'}</div>
+            <div className="form-emoji">{isDonor ? "🙋" : "🏥"}</div>
             <div className="form-title">Complete your profile</div>
-            <div className="form-sub">You're almost in! Just a few more details and you're ready to {isDonor ? 'start saving lives' : 'find donors instantly'}.</div>
+            <div className="form-sub">
+              You're almost in! Just a few more details and you're ready to{" "}
+              {isDonor ? "start saving lives" : "find donors instantly"}.
+            </div>
           </div>
 
           {/* Role Toggle */}
           <div className="role-toggle">
-            <button type="button" className={`role-btn ${formData.role === 'donor' ? 'active' : 'inactive'}`} onClick={() => setFormData({ ...formData, role: 'donor' })}>
+            <button
+              type="button"
+              className={`role-btn ${formData.role === "donor" ? "active" : "inactive"}`}
+              onClick={() => setFormData({ ...formData, role: "donor" })}
+            >
               🩸 I'm a Donor
             </button>
-            <button type="button" className={`role-btn ${formData.role === 'hospital' ? 'active' : 'inactive'}`} onClick={() => setFormData({ ...formData, role: 'hospital' })}>
+            <button
+              type="button"
+              className={`role-btn ${formData.role === "hospital" ? "active" : "inactive"}`}
+              onClick={() => setFormData({ ...formData, role: "hospital" })}
+            >
               🏥 I'm a Hospital
             </button>
           </div>
 
           {error && (
-            <div className="error-box"><span>⚠️</span> {error}</div>
+            <div className="error-box">
+              <span>⚠️</span> {error}
+            </div>
           )}
 
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label className="form-label">{isDonor ? 'Full Name' : 'Hospital Name'}</label>
+              <label className="form-label">
+                {isDonor ? "Full Name" : "Hospital Name"}
+              </label>
               <input
                 type="text"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 required
                 className="form-input"
-                placeholder={isDonor ? 'John Doe' : 'Apollo Hospital'}
+                placeholder={isDonor ? "John Doe" : "Apollo Hospital"}
               />
             </div>
 
@@ -192,7 +256,9 @@ const CompleteProfile = () => {
               <input
                 type="tel"
                 value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
                 required
                 className="form-input"
                 placeholder="9999999999"
@@ -200,20 +266,24 @@ const CompleteProfile = () => {
             </div>
 
             <button type="submit" className="submit-btn" disabled={loading}>
-              {loading
-                ? <><div className="spinner" /> Saving profile...</>
-                : `→ Complete ${isDonor ? 'Donor' : 'Hospital'} Profile`
-              }
+              {loading ? (
+                <>
+                  <div className="spinner" /> Saving profile...
+                </>
+              ) : (
+                `→ Complete ${isDonor ? "Donor" : "Hospital"} Profile`
+              )}
             </button>
           </form>
 
           <div className="hint">
-            Your information is secure and only used to match you with {isDonor ? 'nearby blood requests' : 'available donors'}.
+            Your information is secure and only used to match you with{" "}
+            {isDonor ? "nearby blood requests" : "available donors"}.
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CompleteProfile
+export default CompleteProfile;

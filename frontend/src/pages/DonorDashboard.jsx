@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthLoader from "../components/AuthLoader";
 
+const API = import.meta.env.VITE_API_URL;
+
 const DonorDashboard = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
@@ -31,12 +33,12 @@ const DonorDashboard = () => {
     const loadAllData = async () => {
       setLoading(true);
       try {
-        await Promise.all(
+        await Promise.all([
           fetchProfile(),
           fetchDonorProfile(),
           fetchRequests(),
           fetchRespondedRequests(),
-        );
+        ]);
       } catch (error) {
         console.error("Error loading dashboard data:", error);
       } finally {
@@ -50,7 +52,7 @@ const DonorDashboard = () => {
 
   const fetchProfile = async () => {
     try {
-      const res = await fetch("https://redthread-blood-and-organ-donar-finder.onrender.com/auth/profile", {
+      const res = await fetch(`${API}/auth/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -60,7 +62,7 @@ const DonorDashboard = () => {
 
   const fetchDonorProfile = async () => {
     try {
-      const res = await fetch("https://redthread-blood-and-organ-donar-finder.onrender.com/donor/profile", {
+      const res = await fetch(`${API}/donor/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -76,7 +78,7 @@ const DonorDashboard = () => {
 
   const fetchRequests = async () => {
     try {
-      const res = await fetch("https://redthread-blood-and-organ-donar-finder.onrender.com/donor/requests", {
+      const res = await fetch(`${API}/donor/requests`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -86,7 +88,7 @@ const DonorDashboard = () => {
 
   const fetchRespondedRequests = async () => {
     try {
-      const res = await fetch("https://redthread-blood-and-organ-donar-finder.onrender.com/donor/history", {
+      const res = await fetch(`${API}/donor/history`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -98,7 +100,7 @@ const DonorDashboard = () => {
     e.preventDefault();
     setUpdatingProfile(true);
     try {
-      const res = await fetch("https://redthread-blood-and-organ-donar-finder.onrender.com/donor/profile", {
+      const res = await fetch(`${API}/donor/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -137,10 +139,10 @@ const DonorDashboard = () => {
 
   const handleAccept = async (requestId) => {
     try {
-      const res = await fetch(
-        `https://redthread-blood-and-organ-donar-finder.onrender.com/donor/request/${requestId}/accept`,
-        { method: "POST", headers: { Authorization: `Bearer ${token}` } },
-      );
+      const res = await fetch(`${API}/donor/request/${requestId}/accept`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await res.json();
       if (!res.ok) {
         showToast(data.error, "error");
@@ -154,10 +156,10 @@ const DonorDashboard = () => {
 
   const handleReject = async (requestId) => {
     try {
-      const res = await fetch(
-        `https://redthread-blood-and-organ-donar-finder.onrender.com/donor/request/${requestId}/reject`,
-        { method: "POST", headers: { Authorization: `Bearer ${token}` } },
-      );
+      const res = await fetch(`${API}/donor/request/${requestId}/reject`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await res.json();
       if (!res.ok) {
         showToast(data.error, "error");
