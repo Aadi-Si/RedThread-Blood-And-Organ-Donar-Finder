@@ -223,7 +223,6 @@ router.get("/history", protect, async (req, res) => {
       *,
       requests (
         blood_type,
-        organ,
         urgency_level,
         message,
         created_at,

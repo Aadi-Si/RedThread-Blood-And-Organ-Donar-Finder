@@ -7,7 +7,7 @@ const sendEmail = require('../utils/sendEmail')
 
 // POST AN URGENT REQUEST
 router.post('/request', protect, async (req, res) => {
-  const { blood_type, organ, urgency_level, message, latitude, longitude } = req.body
+  const { blood_type, urgency_level, message, latitude, longitude } = req.body
   const hospitalId = req.user.id
 
   const { data: profile, error: profileError } = await supabase
@@ -27,7 +27,6 @@ router.post('/request', protect, async (req, res) => {
     .insert({
       hospital_id: hospitalId,
       blood_type,
-      organ,
       urgency_level,
       message,
       latitude,
