@@ -14,12 +14,6 @@ const AuthCallback = () => {
         setStatus("Connecting to Google...");
         const { data, error } = await supabase.auth.getSession();
 
-        // just temp code
-        console.log("Session data:", data);
-        console.log("Session object:", data?.session);
-        console.log("Error (if any):", error);
-        // just temp code
-
         if (error || !data.session) {
           navigate("/login");
           return;
