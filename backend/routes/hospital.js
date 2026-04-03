@@ -73,50 +73,6 @@ router.post('/request', protect, async (req, res) => {
   })
 })
 
-// GET ALL ACTIVE REQUESTS
-router.get('/requests', protect, async (req, res) => {
-  const { data, error } = await supabase
-    .from('requests')
-    .select('*')
-    .eq('is_active', true)
-    .order('created_at', { ascending: false })
-
-  if (error) return res.status(400).json({ error: error.message })
-
-  res.status(200).json({ requests: data })
-})
-
-// FIND NEARBY DONORS
-router.get('/nearby-donors', protect, async (req, res) => {
-  const { blood_type, latitude, longitude, radius = 10 } = req.query
-
-  const { data: donors, error } = await supabase
-    .from('donors')
-    .select('*, profiles(name, phone)')
-    .eq('blood_type', blood_type)
-    .eq('is_available', true)
-
-  if (error) return res.status(400).json({ error: error.message })
-
-  const nearbyDonors = donors
-    .filter(donor => {
-      if (!donor.latitude || !donor.longitude) return false
-      const distance = getDistanceInKm(
-        parseFloat(latitude),
-        parseFloat(longitude),
-        donor.latitude,
-        donor.longitude
-      )
-      donor.distance_km = parseFloat(distance.toFixed(2))
-      return distance <= parseFloat(radius)
-    })
-    .sort((a, b) => a.distance_km - b.distance_km)
-
-  res.status(200).json({
-    total: nearbyDonors.length,
-    donors: nearbyDonors
-  })
-})
 
 // CLOSE A REQUEST
 router.put('/request/:requestId/close', protect, async (req, res) => {
