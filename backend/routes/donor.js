@@ -52,21 +52,6 @@ router.get("/profile", protect, async (req, res) => {
   });
 });
 
-// SAVE FCM TOKEN
-router.post("/fcm-token", protect, async (req, res) => {
-  const { fcm_token } = req.body;
-  const userId = req.user.id;
-
-  const { error } = await supabase
-    .from("donors")
-    .update({ fcm_token })
-    .eq("id", userId);
-
-  if (error) return res.status(400).json({ error: error.message });
-
-  res.status(200).json({ message: "FCM token saved successfully" });
-});
-
 // ACCEPT A REQUEST
 router.post("/request/:requestId/accept", protect, async (req, res) => {
   const { requestId } = req.params;
